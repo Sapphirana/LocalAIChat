@@ -10,7 +10,7 @@
 - **Chat Sessions:** Engage in conversations with characters and save the chat history.
 - **Streaming Responses:** Receive AI responses in real-time as they are generated (using streaming).
 - **Cross-Platform:** Designed to run on Windows and mobile devices.
-- **THEMES**: Change the color of the ui whatever you like!
+- **Themes**: Change the color of the ui whatever you like!
 
 ## Prerequisites
 
@@ -56,4 +56,4 @@
 ## License
 
 [MIT License](LICENSE)  
-*(Create a LICENSE file with your chosen license.)*
+
