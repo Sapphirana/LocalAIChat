@@ -11,6 +11,7 @@
 - **Streaming Responses:** Receive AI responses in real-time as they are generated (using streaming).
 - **Cross-Platform:** Designed to run on Windows and mobile devices.
 - **Themes**: Change the color of the UI however you like!
+- **Lightweight** Simple, clean, modern look and minimal performance impact.
 
 ## ⚠️ Important Notice for Users
 
