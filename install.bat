@@ -17,15 +17,12 @@ REM Step 2: Activate virtual environment
 echo Activating virtual environment...
 call "%PROJECT_DIR%%ENV_NAME%\Scripts\activate.bat"
 
-REM Step 3: Upgrade pip (optional)
-echo Upgrading pip...
-python -m pip install --upgrade pip
 
-REM Step 4: Install dependencies
+REM Step 3: Install dependencies
 echo Installing dependencies from requirements.txt...
 pip install -r requirements.txt
 
-REM Step 5: Run main.py
+REM Step 4: Run main.py
 echo Starting Flask server from main.py...
 python main.py
 

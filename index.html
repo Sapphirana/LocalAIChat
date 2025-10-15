@@ -4,15 +4,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
-    <title>Local AI Chat v2</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Local AI Chat</title>
+    <link href="data/tailwind.min.css" rel="stylesheet">
+    <script src="data/marked.min.js"></script>
+    <script src="data/purify.min.js"></script>
+
     <style>
         :root {
             --bg-primary: #111827;
             /* gray-900 */
             --bg-secondary: #1f2937;
             /* gray-800 */
-            --bg-accent-color : #374151;
+            --bg-accent-color: #374151;
             /* gray-700 */
             --text-main: #f3f4f6;
             /* gray-200 */
@@ -24,72 +27,95 @@
             /* indigo-700 */
             --border-color: #4b5563;
             /* gray-600 */
-            --bg-accent-color: #1f2937; /* New background accent color - you can change this */
+            --bg-accent-color: #1f2937;
+            /* New background accent color - you can change this */
+
+             --markdown-quote: #d1d5db; /* A nice light gray for quotes */
+
 
         }
 
-     
-
+        .message-content strong {
+  color: var(--markdown-bold, var(--text-main));
+}
 
         body {
             background-color: var(--bg-primary);
             color: var(--text-main);
         }
 
-        
+         * {
+        border-color: var(--bg-secondary) !important;
+            }
+
+
         #theme-selector {
-        background-color: var(--bg-accent-color) !important;
-        color: var(--text-main) !important;
-        border: 1px solid var(--border-color) !important;
-    }
+            background-color: var(--bg-accent-color) !important;
+            color: var(--text-main) !important;
+            border: 1px solid var(--border-color) !important;
+        }
 
-    /* Ensure custom color pickers match the theme */
-    #custom-colors input[type="color"] {
-        background-color: var(--bg-secondary) !important;
-        border: 1px solid var(--border-color) !important;
-    }
-  /* Markdown styling */
+        /* Ensure custom color pickers match the theme */
+        #custom-colors input[type="color"] {
+            background-color: var(--bg-secondary) !important;
+            border: 1px solid var(--border-color) !important;
+        }
 
-
-.message-content .markdown-quote {
-   
-    color: var(--markdown-quote, #f6f6f6); /* Changed default to black */
+        /* Markdown styling */
+        .message-content blockquote {
+  border-left: 4px solid var(--accent-color);
+  padding-left: 1rem;
+  margin: 1rem 0;
+  color: var(--text-main);
+  font-style: italic;
 }
-
-
-
-
 .message-content em {
-    font-style: italic;
-    color: var(--markdown-italic, #a5b4fc);
+  color: var(--markdown-italic);
+  font-style: italic;
 }
 
-.message-content code {
-    background-color: var(--markdown-code-bg, #374151);
-    padding: 0.2rem 0.4rem;
-    border-radius: 0.25rem;
-    font-family: monospace;
-    color: var(--text-main, #f3f4f6);
-    display: block;
-    width: 100%;
-}
+        .message-content .markdown-quote p {
+
+            color: var(--markdown-quote);
+            /* Changed default to black */
+        }
 
 
-.message-content a {
-    color: var(--markdown-link, #60a5fa);
-    text-decoration: underline;
-}
 
-.message-content h1, .message-content h2, .message-content h3 {
-    margin-top: 1.5rem;
-    margin-bottom: 1rem;
-    font-weight: bold;
-    color: var(--text-main, #f3f4f6);
-}
 
-.message-content ul {
-    margin-left: 1.5rem;
-}
+        .message-content em {
+            font-style: italic;
+            color: var(--markdown-italic, #a5b4fc);
+        }
+
+        .message-content code {
+            background-color: var(--markdown-code-bg, #374151);
+            padding: 0.2rem 0.4rem;
+            border-radius: 0.25rem;
+            font-family: monospace;
+            color: var(--text-main, #f3f4f6);
+            display: block;
+            width: 100%;
+        }
+
+
+        .message-content a {
+            color: var(--markdown-link, #60a5fa);
+            text-decoration: underline;
+        }
+
+        .message-content h1,
+        .message-content h2,
+        .message-content h3 {
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            font-weight: bold;
+            color: var(--text-main, #f3f4f6);
+        }
+
+        .message-content ul {
+            margin-left: 1.5rem;
+        }
 
         /* Custom scrollbar */
         ::-webkit-scrollbar {
@@ -123,23 +149,24 @@
         }
 
         #sidebar {
-          
-    width: 20rem; /* or whatever sidebar size you want */
-    transition: transform 0.3s ease-in-out;
 
-            
+            width: 20rem;
+            /* or whatever sidebar size you want */
+            transition: transform 0.3s ease-in-out;
+
+
         }
-        
+
 
         #chat-area {
-           
-    flex-grow: 1;
-    transition: margin-left 0.3s ease-in-out;
+
+            flex-grow: 1;
+            transition: margin-left 0.3s ease-in-out;
 
         }
 
-    
-        
+
+
 
         @keyframes pulse {
             0% {
@@ -159,74 +186,73 @@
         .message-bubble:hover .message-actions {
             visibility: visible;
             opacity: 1;
-         
+
         }
 
         /* Message bubble styling */
-.message-bubble {
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    
-    margin-bottom: 1rem;
+        .message-bubble {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+
+            margin-bottom: 1rem;
+        }
+
+        .message-bubble.justify-end {
+            justify-content: flex-end;
+        }
+
+        .message-bubble .message-content {
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            max-width: 80%;
+            word-wrap: break-word;
+            position: relative;
+        }
+
+        /* User message styling */
+
+
+        .streaming-content {
+
+            background-color: var(--bg-accent-color) !important;
+            color: var(--text-main);
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            max-width: 80%;
+            word-wrap: break-word;
+            position: relative;
+
+        }
+
+        .streaming-content blockquote {
+  border-left: 4px solid var(--accent-color);
+  padding-left: 1rem;
+  margin: 1rem 0;
+  color: var(--markdown-quote);
+  font-style: italic;
 }
-
-.message-bubble.justify-end {
-    justify-content: flex-end;
-}
-
-.message-bubble .message-content {
-    padding: 0.75rem 1rem;
-    border-radius: 0.75rem;
-    max-width: 80%;
-    word-wrap: break-word;
-    position: relative;
-}
-
-/* User message styling */
+        /* Assistant message styling */
+        /* Assistant message styling */
 
 
-.streaming-content{
+        /* Message actions (hidden by default, visible on hover) */
+        .message-actions {
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.2s;
+            display: flex;
+            gap: 0.25rem;
+            background-color: var(--bg-secondary) !important;
+            padding: 0.25rem;
+            border-radius: 9999px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
 
-    background-color: var(--bg-accent-color ) !important;
-    color: var(--text-main);
-    padding: 0.75rem 1rem;
-    border-radius: 0.75rem;
-    max-width: 80%;
-    word-wrap: break-word;
-    position: relative;
-
-}
-/* Assistant message styling */
-/* Assistant message styling */
-
-
-.message-bubble .assistant-message {
-    background-color: var(--bg-accent-color ) !important;
-    color: var(--text-main);
-    padding: 0.75rem 1rem;
-    border-radius: 0.75rem;
-    max-width: 80%;
-    word-wrap: break-word;
-    position: relative;
-}
-/* Message actions (hidden by default, visible on hover) */
-.message-actions {
-    visibility: hidden;
-    opacity: 0;
-    transition: opacity 0.2s;
-    display: flex;
-    gap: 0.25rem;
-    background-color: var(--bg-secondary) !important;
-    padding: 0.25rem;
-    border-radius: 9999px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
-.message-bubble:hover .message-actions {
-    visibility: visible;
-    opacity: 1;
-}
+        .message-bubble:hover .message-actions {
+            visibility: visible;
+            opacity: 1;
+        }
 
 
 
@@ -246,12 +272,14 @@
             /* Başlangıçta gizli */
             transition: transform 0.3s ease-in-out;
         }
+
         .sidebar-hidden #sidebar {
-    transform: translateX(-100%);
-}
-.sidebar-hidden #chat-area {
-    margin-left: 0 !important;
-}
+            transform: translateX(-100%);
+        }
+
+        .sidebar-hidden #chat-area {
+            margin-left: 0 !important;
+        }
 
         #chat-area {
             margin-left: 0;
@@ -260,90 +288,89 @@
         }
 
         .chat-input-area {
-    position: fixed !important; /* This fixes it to viewport */
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 100; /* High z-index to stay on top */
-    background-color: var(--bg-accent-color) !important;
-}
+            position: fixed !important;
+            /* This fixes it to viewport */
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            /* High z-index to stay on top */
+            background-color: var(--bg-accent-color) !important;
+        }
 
         /* Background accent color for messages and UI elements */
-.bg-accent-color {
-    background-color: var(--bg-accent-color) !important;
-}
-
-
-.character-item.selected, .character-item:hover{
-    color: var(--text-main);
-}
-
-/* User message styling using bg-accent-color */
-.message-bubble .user-message {
-    background-color: var(--accent-color) !important;
-    color: var(--text-main);
-    
-    margin-left: auto;
-    text-align: right;
-    padding: 0.75rem 1rem;
-    border-radius: 0.75rem;
-    max-width: 80%;
-    word-wrap: break-word;
-    position: relative;
-}
-
-/* Assistant message styling using bg-accent-color */
-.message-bubble .assistant-message {
-    background-color: var(--bg-accent-color) !important;
-    color: var(--text-main);
-    padding: 0.75rem 1rem;
-    border-radius: 0.75rem;
-    max-width: 80%;
-    word-wrap: break-word;
-    position: relative;
-}
-
-/* Other elements that use bg-tertiary */
-.bg-tertiary {
-    background-color: var(--bg-accent-color) !important;
-}
-
-
-/* Replace all instances of "bg-tertiary" styling with this: */
-.chat-input-area {
-    background-color: var(--bg-accent-color) !important;
-    padding-bottom: env(safe-area-inset-bottom); /* Add this line */
-    position: relative; /* Add this line */
-}
-
-
-.message-bubble .assistant-message {
-    background-color: var(--bg-accent-color) !important;
-}
-
-/* Add this to your existing styles */
-#edit-message-text {
-    resize: none;
-}
-
-
-/* Update chat input area to use bg-accent-color instead of bg-tertiary */
-.chat-input-area .message-input {
-    background-color: rgba(255, 255, 255, 0.1) !important; /* Semi-transparent for better contrast */
-    color: white !important;
-    border: none !important;
-}
-
-/* Update chat item styling to use bg-accent-color */
-.chat-item,
-.character-item {
-    background-color: var(--bg-accent-color) !important;
-}
-
-
-        .chat-input-area .bg-accent-color {
-            background-color: var(--accent-color) !important;
+        .bg-accent-color {
+            background-color: var(--bg-accent-color) !important;
         }
+
+
+        .character-item.selected,
+        .character-item:hover {
+            color: var(--text-main);
+        }
+
+        /* User message styling using bg-accent-color */
+        .message-bubble .user-message {
+            background-color: var(--accent-color) !important;
+            color: var(--text-main);
+
+            margin-left: auto;
+            text-align: right;
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            max-width: 80%;
+            word-wrap: break-word;
+            position: relative;
+        }
+
+        /* Assistant message styling using bg-accent-color */
+        .message-bubble .assistant-message {
+            background-color: var(--bg-accent-color) !important;
+            color: var(--text-main);
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            max-width: 80%;
+            word-wrap: break-word;
+            position: relative;
+        }
+
+        /* Other elements that use bg-tertiary */
+        .bg-tertiary {
+            background-color: var(--bg-accent-color) !important;
+        }
+
+
+        /* Replace all instances of "bg-tertiary" styling with this: */
+        .chat-input-area {
+            background-color: var(--bg-accent-color) !important;
+            padding-bottom: env(safe-area-inset-bottom);
+            /* Add this line */
+            position: relative;
+            /* Add this line */
+        }
+
+
+        /* Add this to your existing styles */
+        #edit-message-text {
+            resize: none;
+        }
+
+
+        /* Update chat input area to use bg-accent-color instead of bg-tertiary */
+        .chat-input-area .message-input {
+            background-color: rgba(255, 255, 255, 0.1) !important;
+            /* Semi-transparent for better contrast */
+            color: white !important;
+            border: none !important;
+        }
+
+        /* Update chat item styling to use bg-accent-color */
+        .chat-item,
+        .character-item {
+            background-color: var(--bg-accent-color) !important;
+        }
+
+
 
         /* Ensure the send button uses accent color properly */
         #chat-form .bg-accent-color,
@@ -459,13 +486,52 @@
 
 
 
+/* Add this to your existing CSS */
+.message-content q {
+    color: var(--markdown-quote) !important;
+    font-style: italic;
+}
+
+/* Also ensure any span or other elements with quote styling work */
+.message-content .quote,
+.message-content .inline-quote {
+    color: var(--markdown-quote) !important;
+    font-style: italic;
+}
 
         /* Sidebar AÇIKKEN (sidebar-hidden sınıfı YOK) mobil stil */
         /* Kenar çubuğunun varsayılan olarak mobil görünümde sol tarafta görünmesini sağlar */
-    
 
 
-        /* Sidebar KAPALIYKEN (sidebar-hidden sınıfı VAR) mobil/masaüstü stil */
+
+
+        #main-container.sidebar-hidden #chat-area {
+            margin-left: 0 !important;
+        }
+
+        /* Masaüstü (md ve üzeri) için mevcut düzeninizi koruyun */
+        /* Add this to your existing styles */
+
+        @media (max-width: 767px) {
+            #sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 17rem;
+                /* Your sidebar width */
+                height: 100vh;
+                transform: translateX(0);
+
+                transition: transform 0.3s ease-in-out;
+            }
+
+            #chat-area {
+                margin-left: 17rem;
+                /* Same as sidebar width */
+
+            }
+        }
+
         #main-container.sidebar-hidden #sidebar {
             transform: translateX(-100%) !important;
         }
@@ -474,131 +540,112 @@
             margin-left: 0 !important;
         }
 
-        /* Masaüstü (md ve üzeri) için mevcut düzeninizi koruyun */
-/* Add this to your existing styles */
+        /* Ensure the chat window scrolls independently */
+        #chat-window {
+            height: calc(100vh - 120px);
+            /* Adjust based on your header/footer height */
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
 
-@media (max-width: 767px) {
-    #sidebar {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 17rem; /* Your sidebar width */
-        height: 100vh;
-        transform: translateX(0);
-     
-        transition: transform 0.3s ease-in-out;
-    }
-
-    #chat-area {
-        margin-left: 17rem; /* Same as sidebar width */
-  
-    }
-}#main-container.sidebar-hidden #sidebar {
-    transform: translateX(-100%) !important;
-}
-
-#main-container.sidebar-hidden #chat-area {
-    margin-left: 0 !important;
-}
-
-    /* Ensure the chat window scrolls independently */
-    #chat-window {
-        height: calc(100vh - 120px); /* Adjust based on your header/footer height */
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-    }
-    
-    /* Make settings area scrollable */
-    #settings-accordion {
-        max-height: calc(100vh - 200px);
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-    }
+        /* Make settings area scrollable */
+        #settings-accordion {
+            max-height: calc(100vh - 200px);
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
 
 
 
 
 
-/* Try this complete mobile-specific solution */
-@media screen and (max-width: 768px) {
-    .chat-input-area {
-        position: fixed !important;
-        bottom: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-        z-index: 9999 !important;
-        padding-bottom: env(safe-area-inset-bottom) !important;
-        transform: translateZ(0); /* Force hardware acceleration */
-    }
+        /* Try this complete mobile-specific solution */
+        @media screen and (max-width: 768px) {
+            .chat-input-area {
+                position: fixed !important;
+                bottom: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                z-index: 9999 !important;
+                padding-bottom: env(safe-area-inset-bottom) !important;
+                transform: translateZ(0);
+                /* Force hardware acceleration */
+            }
 
-    #main-container {
-    display: flex;
-    height: 100vh;
-}
-}
+            #main-container {
+                display: flex;
+                height: 100vh;
+            }
+        }
 
-/* Desktop layout */
-@media (min-width: 768px) {
-    #sidebar {
-        position: static; /* Not fixed on desktop */
-        width: 20rem;
-        height: auto;
-        transform: none !important;
-    }
+        /* Desktop layout */
+        @media (min-width: 768px) {
+            #sidebar {
+                position: static;
+                /* Not fixed on desktop */
+                width: 20rem;
+                height: auto;
+                transform: none !important;
+            }
 
-    #chat-area {
-     
-        flex-grow: 1;
-    }
-}
+            #chat-area {
 
-/* For the full block container */
-.markdown-code-block {
-  width: 100%;
-  margin: 1rem 0;
-  overflow-x: auto;
-}
+                flex-grow: 1;
+            }
+        }
 
-/* For inline code */
-.markdown-inline-code {
-  background-color: #374151; /* bg-gray-700 */
-  color: white;
-  padding: 0.25rem 0.5rem; /* px-1 py-0.5 */
-  border-radius: 0.25rem; /* rounded */
-  font-family: monospace;
-}
+        /* For the full block container */
+        .markdown-code-block {
+            width: 100%;
+            margin: 1rem 0;
+            overflow-x: auto;
+        }
 
-/* For block code (full width) */
-.markdown-block-code {
-  background-color: #1f2937; /* bg-gray-800 */
-  color: white;
-  padding: 1rem; /* p-4 */
-  border-radius: 0.5rem; /* rounded */
-  font-family: monospace;
-  font-size: 0.875rem; /* text-sm */
-  overflow-x: auto;
-  width: 100%;
-  box-sizing: border-box;
-}
+        /* For inline code */
+        .markdown-inline-code {
+            background-color: #374151;
+            /* bg-gray-700 */
+            color: white;
+            padding: 0.25rem 0.5rem;
+            /* px-1 py-0.5 */
+            border-radius: 0.25rem;
+            /* rounded */
+            font-family: monospace;
+        }
 
-/* Alternative full-width block code with better spacing */
-.code-block-container {
-  background-color: #1f2937;
-  padding: 1rem;
-  border-radius: 0.5rem;
-  margin: 1rem 0;
-  width: 100%;
-  box-sizing: border-box;
-}
+        /* For block code (full width) */
+        .markdown-block-code {
+            background-color: #1f2937;
+            /* bg-gray-800 */
+            color: white;
+            padding: 1rem;
+            /* p-4 */
+            border-radius: 0.5rem;
+            /* rounded */
+            font-family: monospace;
+            font-size: 0.875rem;
+            /* text-sm */
+            overflow-x: auto;
+            width: 100%;
+            box-sizing: border-box;
+        }
 
-
+        /* Alternative full-width block code with better spacing */
+        .code-block-container {
+            background-color: #1f2937;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+            width: 100%;
+            box-sizing: border-box;
+        }
     </style>
 </head>
 
 <body class="font-sans antialiased">
 
-   
-    
+
+
 
     <!-- Main Container -->
     <div id="main-container" class="relative flex h-screen overflow-hidden">
@@ -606,7 +653,7 @@
         <!-- Left Sidebar -->
         <aside id="sidebar"
             class="w-70 bg-secondary flex-shrink-0 p-3 flex flex-col border-r border-border-color absolute md:relative inset-y-0 left-0 z-20">
-            <h1 class="text-2xl font-bold mb-4 text-center">AI Characters</h1>
+            <h1 class="text-2xl font-bold mb-4 text-center">Local AI Chat</h1>
             <button id="add-char-btn"
                 class="w-full bg-accent-color hover:bg-accent-hover text-main font-bold py-2 px-4 rounded-lg transition duration-200 mb-4">
                 + Add New Character
@@ -618,27 +665,28 @@
 
             <!-- Settings Accordion -->
             <!-- In your settings accordion section, update this part -->
-<div id="settings-accordion" class="mt-4 border-t border-border-color pt-4 space-y-2 overflow-y-auto max-h-[calc(100vh-200px)]">
+            <div id="settings-accordion"
+                class="mt-4 border-t border-border-color pt-4 space-y-2 overflow-y-auto max-h-[calc(100vh-200px)]">
 
                 <!-- User Persona -->
-             <!-- Inside the "Your Persona" details section -->
-<details class="bg-accent-color /50 rounded-lg p-2">
-    <summary class="font-semibold cursor-pointer">Your Persona</summary>
-    <textarea id="user-persona" rows="3" class="w-full mt-2 bg-secondary rounded p-2 text-sm"
-        placeholder="Describe yourself to the AI..."></textarea>
-    <div class="mt-2">
-        <label class="block text-sm font-medium mb-1">User Avatar URL</label>
-        <input type="text" id="user-avatar-url"
-            class="w-full bg-accent-color/50 border border-border-color rounded p-2 text-sm"
-            placeholder="https://example.com/avatar.png">
-    </div>
-    <!-- ADD THIS NEW SECTION FOR UPLOAD -->
-    <div class="mt-2">
-        <label class="block text-sm font-medium mb-1">Upload User Avatar</label>
-        <input type="file" id="user-avatar-upload" accept="image/*"
-            class="w-full bg-accent-color/50 border border-border-color rounded p-2 text-sm">
-    </div>
-</details>
+                <!-- Inside the "Your Persona" details section -->
+                <details class="bg-accent-color /50 rounded-lg p-2">
+                    <summary class="font-semibold cursor-pointer">Your Persona</summary>
+                    <textarea id="user-persona" rows="3" class="w-full mt-2 bg-secondary rounded p-2 text-sm"
+                        placeholder="Describe yourself to the AI..."></textarea>
+                    <div class="mt-2">
+                        <label class="block text-sm font-medium mb-1">User Avatar URL</label>
+                        <input type="text" id="user-avatar-url"
+                            class="w-full bg-accent-color/50 border border-border-color rounded p-2 text-sm"
+                            placeholder="'data/Icons/User.png'">
+                    </div>
+                    <!-- ADD THIS NEW SECTION FOR UPLOAD -->
+                    <div class="mt-2">
+                        <label class="block text-sm font-medium mb-1">Upload User Avatar</label>
+                        <input type="file" id="user-avatar-upload" accept="image/*"
+                            class="w-full bg-accent-color/50 border border-border-color rounded p-2 text-sm">
+                    </div>
+                </details>
                 <details class="bg-accent-color /50 rounded-lg p-2">
                     <summary class="font-semibold cursor-pointer">AI Settings</summary>
                     <div class="mt-2 space-y-3 p-1">
@@ -670,15 +718,15 @@
                             <option value="sepia">Sepia</option>
                             <option value="forest">Forest</option>
                             <option value="ocean">Ocean</option>
-                            <option value="blush">Blush</option>
+                            <option value="glacier">Glacier</option>
                             <option value="earthy">Earthy</option>
                             <option value="lavender">Lavender</option>
-               
+
                             <option value="custom">Custom</option>
                         </select>
-                        
-                        
-                        
+
+
+
                         <div id="custom-colors" class="hidden space-y-2 p-1 border-t border-border-color mt-2">
                             <label class="flex items-center justify-between text-sm"><span>Primary BG</span><input
                                     type="color" data-css-var="--bg-primary" class="h-6 w-10"></label>
@@ -686,23 +734,35 @@
                                     type="color" data-css-var="--bg-secondary" class="h-6 w-10"></label>
                             <label class="flex items-center justify-between text-sm"><span>Accent</span><input
                                     type="color" data-css-var="--accent-color" class="h-6 w-10"></label>
-                                    <!-- In your Theme Settings section, add this to the custom colors -->
-                            <label class="flex items-center justify-between text-sm"><span>Background Accent</span><input
-                                 type="color" data-css-var="--bg-accent-color" class="h-6 w-10"></label>
+                            <!-- In your Theme Settings section, add this to the custom colors -->
+                            <label class="flex items-center justify-between text-sm"><span>Background
+                                    Accent</span><input type="color" data-css-var="--bg-accent-color"
+                                    class="h-6 w-10"></label>
 
                             <label class="flex items-center justify-between text-sm"><span>Text</span><input
                                     type="color" data-css-var="--text-main" class="h-6 w-10"></label>
-                                    <!-- Markdown color settings -->
-<div class="mt-3 pt-3 border-t border-border-color">
-    <h4 class="font-semibold mb-2">Markdown Colors</h4>
-    <label class="flex items-center justify-between text-sm"><span>Bold Text</span><input type="color" data-css-var="--markdown-quote" value="#ffffff" class="h-6 w-10"></label>
-    <label class="flex items-center justify-between text-sm"><span>Italic Text</span><input type="color" data-css-var="--markdown-italic" value="#a5b4fc" class="h-6 w-10"></label>
-    <label class="flex items-center justify-between text-sm"><span>Code Background</span><input type="color" data-css-var="--markdown-code-bg" value="#374151" class="h-6 w-10"></label>
-    <label class="flex items-center justify-between text-sm"><span>Link Color</span><input type="color" data-css-var="--markdown-link" value="#60a5fa" class="h-6 w-10"></label>
-</div>
+                            <!-- Markdown color settings -->
+                            <div class="mt-3 pt-3 border-t border-border-color">
+                                <h4 class="font-semibold mb-2">Markdown Colors</h4>
+                                <label class="flex items-center justify-between text-sm">
+                                    <span>Quote Text</span>
+                                    <input type="color" data-css-var="--markdown-quote" value="#d1d5db" class="h-6 w-10">
+                                  </label>
+                                <label class="flex items-center justify-between text-sm"><span>Italic Text</span><input
+                                        type="color" data-css-var="--markdown-italic" value="#a5b4fc"
+                                        class="h-6 w-10"></label>
+                                 <label class="flex items-center justify-between text-sm"><span>Bold Text</span><input type="color" data-css-var="--markdown-bold" value="#a5b4fc"
+                                            class="h-6 w-10"></label>
+                                <label class="flex items-center justify-between text-sm"><span>Code
+                                        Background</span><input type="color" data-css-var="--markdown-code-bg"
+                                        value="#374151" class="h-6 w-10"></label>
+                                <label class="flex items-center justify-between text-sm"><span>Link Color</span><input
+                                        type="color" data-css-var="--markdown-link" value="#60a5fa"
+                                        class="h-6 w-10"></label>
+                            </div>
 
                         </div>
-                
+
                     </div>
                 </details>
             </div>
@@ -712,7 +772,7 @@
             <header
                 class="bg-secondary/80 backdrop-blur-sm p-3 border-b border-border-color flex items-center justify-between flex-shrink-0">
                 <div class="flex items-center">
-                    
+
                     <!-- Toggle button moved outside sidebar -->
                     <button id="sidebar-toggle" class="p-2 mr-2 rounded-full hover:bg-accent-color  ">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -720,7 +780,7 @@
                                 d="M4 6h16M4 12h16m-7 6h7"></path>
                         </svg>
                     </button>
-                    
+
                     <h2 id="chat-header-text" class="text-xl font-bold truncate">Select a character</h2>
                 </div>
                 <div id="stream-controls" class="flex hidden">
@@ -732,8 +792,8 @@
                         </svg>
                         Stop Generating...
                     </button>
-              
-            </div>
+
+                </div>
                 <button id="new-chat-btn" class="hidden p-2 rounded-full hover:bg-accent-color " title="New Chat">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -754,29 +814,29 @@
                     </div>
                 </div>
             </div>
-<div id="chat-input-area" class="p-3 bg-accent-color">
-    <div id="streaming-indicator" class="text-center text-sm text-gray-500 py-2 animate-pulse hidden">
-        AI is typing...
-    </div>
-    
-    <form id="chat-form" class="flex items-center gap-2">
-        <textarea id="message-input" placeholder="Message..." rows="1"
-            class="flex-1 p-3 rounded-lg bg-accent-color/50 text-white border-none resize-none focus:outline-none message-input"></textarea>
-        
-        <!-- Replace send button with cancel button when streaming -->
-        <div id="button-container">
-            <button type="submit" class="p-2 rounded-full bg-accent-color hover:bg-accent-color/80">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
-                </svg>
-            </button>
-        </div>
-    </form>
+            <div id="chat-input-area" class="p-3 bg-accent-color">
+                <div id="streaming-indicator" class="text-center text-sm text-gray-500 py-2 animate-pulse hidden">
+                    AI is typing...
+                </div>
 
-  
+                <form id="chat-form" class="flex items-center gap-2">
+                    <textarea id="message-input" placeholder="Message..." rows="1"
+                        class="flex-1 p-3 rounded-lg bg-accent-color/50 text-white border-none resize-none focus:outline-none message-input"></textarea>
 
-            
+                    <!-- Replace send button with cancel button when streaming -->
+                    <div id="button-container">
+                        <button type="submit" class="p-2 rounded-full bg-accent-color hover:bg-accent-color/80">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </form>
+
+
+
+
 
 
             </div>
@@ -850,13 +910,21 @@
                 </div>
             </form>
         </div>
-    </div>
+    
     </div>
 
     <script>
         // --- Self-invoking function to encapsulate logic ---
         (() => {
             // --- DOM Elements ---
+
+            marked.setOptions({
+  breaks: true, // Convert \n to <br>
+  gfm: true,    // GitHub Flavored Markdown
+  sanitize: false, // We’ll sanitize separately
+});
+
+
             const $ = (selector) => document.querySelector(selector);
             const $$ = (selector) => document.querySelectorAll(selector);
 
@@ -891,7 +959,7 @@
             const minPSlider = $('#min_p');
             const minPValue = $('#min-p-value');
             const userAvatarInput = $('#user-avatar-url');
-const userAvatarUpload = $('#user-avatar-upload'); // ADD THIS LINE
+            const userAvatarUpload = $('#user-avatar-upload'); // ADD THIS LINE
 
             // Theming
             const themeSelector = $('#theme-selector');
@@ -917,209 +985,207 @@ const userAvatarUpload = $('#user-avatar-upload'); // ADD THIS LINE
             // --- THEME MANAGEMENT ---
             // Add this to the PRESET_THEMES object:
             const PRESET_THEMES = {
-                dark: { 
-        '--bg-primary': '#111827', 
-        '--bg-secondary': '#1f2937', 
-        '--bg-accent-color': '#1f2937',
-        '--accent-color': '#4f46e5', 
-        '--text-main': '#f3f4f6',
-        '--markdown-quote': '#ffffff',
-        '--markdown-italic': '#a5b4fc',
-        '--markdown-code-bg': '#374151',
-        '--markdown-link': '#60a5fa'
+    dark: {
+        '--bg-primary': '#121212',
+        '--bg-secondary': '#1e1e1e',
+        '--bg-accent-color': '#252525',
+        '--accent-color': '#6c5ce7',
+        '--text-main': '#e0e0e0',
+        '--markdown-quote': '#b0bec5',
+        '--markdown-italic': '#a29bfe',
+        '--markdown-code-bg': '#2d2d2d',
+        '--markdown-link': '#55efc4'
     },
-    pink: { 
-    '--bg-primary': '#fdf2f8', 
-    '--bg-secondary': '#fce7f3', 
-    '--bg-accent-color': '#fce7f3',
-    '--accent-color': '#db2777', 
-    '--text-main': '#500724',
-    '--markdown-quote': '#be185d',
-    '--markdown-italic': '#ec4899',
-    '--markdown-code-bg': '#fbcfe8',
-    '--markdown-link': '#d946ef'
-},
+    pink: {
+    '--bg-primary': '#2b0e1c',            // Deep rosewood
+    '--bg-secondary': '#3c1628',          // Dark berry
+    '--bg-accent-color': '#5a1f3a',       // Plum-pink accent
+    '--accent-color': '#ff5c8d',          // Bright punchy pink
+    '--text-main': '#ffe9ef',             // Soft light pink
+    '--markdown-quote': '#d81b60',        // Vivid raspberry
+    '--markdown-italic': '#f48fb1',       // Ballet pink
+    '--markdown-code-bg': '#451728',      // Wine background
+    '--markdown-link': '#ff80ab'          // Cotton candy
+}
+,
 
-cappuccino: { 
-    '--bg-primary': '#f0e9e4', 
-    '--bg-secondary': '#e4d9cf', 
-    '--bg-accent-color': '#e4d9cf',
-    '--accent-color': '#8c5a3b', 
-    '--text-main': '#4b372b',
-    '--markdown-quote': '#5c3a28',
-    '--markdown-italic': '#a47149',
-    '--markdown-code-bg': '#d6c4b2',
-    '--markdown-link': '#a65f3c'
-},
-
-sepia: { 
-    '--bg-primary': '#f1e6d0', 
-    '--bg-secondary': '#e4d5b7', 
-    '--bg-accent-color': '#e4d5b7',
-    '--accent-color': '#70542d', 
-    '--text-main': '#43341b',
-    '--markdown-quote': '#5a4320',
-    '--markdown-italic': '#8b6b3d',
-    '--markdown-code-bg': '#d9c9a3',
-    '--markdown-link': '#a1763f'
-},
-
-forest: { 
-    '--bg-primary': '#1b3a2b', 
-    '--bg-secondary': '#3e6f47', 
-    '--bg-accent-color': '#3e6f47',
-    '--accent-color': '#6c9e55', 
-    '--text-main': '#e4f4e1',
-    '--markdown-quote': '#d2f5c8',
-    '--markdown-italic': '#a8ddb5',
-    '--markdown-code-bg': '#2a4d3a',
-    '--markdown-link': '#8ef0a7'
-},
-
-ocean: { 
-    '--bg-primary': '#023e8a', 
-    '--bg-secondary': '#0077b6', 
-    '--bg-accent-color': '#0096c7',
-    '--accent-color': '#00b4d8', 
-    '--text-main': '#ffffff',
-    '--markdown-quote': '#caf0f8',
-    '--markdown-italic': '#ade8f4',
-    '--markdown-code-bg': '#014f86',
-    '--markdown-link': '#90e0ef'
-},
-
-blush: { 
-    '--bg-primary': '#FCE2E2', 
-    '--bg-secondary': '#F9B5B5', 
-    '--bg-accent-color': '#F9B5B5',
-    '--accent-color': '#F87070', 
-    '--text-main': '#3E3B3A',
-    '--markdown-quote': '#cc6666',
-    '--markdown-italic': '#f48c8c',
-    '--markdown-code-bg': '#fddddd',
-    '--markdown-link': '#f87171'
-},
-
-earthy: { 
-    '--bg-primary': '#D3C9A1', 
-    '--bg-secondary': '#C1B48B', 
-    '--bg-accent-color': '#C1B48B',
-    '--accent-color': '#8E7D3B', 
-    '--text-main': '#3E3E32',
-    '--markdown-quote': '#5e5632',
-    '--markdown-italic': '#a49462',
-    '--markdown-code-bg': '#e2d7af',
-    '--markdown-link': '#947f3c'
-},
-
-lavender: { 
-    '--bg-primary': '#e6e6fa', 
-    '--bg-secondary': '#dcd6f7', 
-    '--bg-accent-color': '#dcd6f7',
-    '--accent-color': '#7f5fc6', 
-    '--text-main': '#4e4b87',
-    '--markdown-quote': '#5e4aa5',
-    '--markdown-italic': '#a599d4',
-    '--markdown-code-bg': '#d2ccf1',
-    '--markdown-link': '#8b72d1'
-},
-
-light: {
-    '--bg-primary': '#ffffff',
-    '--bg-secondary': '#f4f4f9',
-    '--bg-accent-color': '#e0e0e0',
-    '--accent-color': '#007acc',
-    '--text-main': '#333333',
-    '--markdown-quote': '#000000',
-    '--markdown-italic': '#007acc',
-    '--markdown-code-bg': '#f0f0f0',
-    '--markdown-link': '#0066cc'
+ 
+ cappuccino: {
+    '--bg-primary': '#141420',          // Darker base (almost black-purple)
+  '--bg-secondary': '#0f0f14',        // Even darker mantle
+  '--bg-accent-color': '#2a2a3b',     // Deeper surface shade
+  '--accent-color': '#d87e54',        // Warm peach, slightly more saturated for pop
+  '--text-main': '#bfc7d8',           // Softer light text, less bright than original
+  '--markdown-quote': '#e8bdb6',      // Muted flamingo pink
+  '--markdown-italic': '#e9a778',     // Softer peachy tone
+  '--markdown-code-bg': '#2a2a3b',    // Same as bg-accent-color for consistency
+  '--markdown-link': '#7da7f9'   
 }
 
+
+,
+    sepia: {
+        '--bg-primary': '#f8f3e6',
+        '--bg-secondary': '#f0e7d5',
+        '--bg-accent-color': '#e8dbc4',
+        '--accent-color': '#795548',
+        '--text-main': '#3e2723',
+        '--markdown-quote': '#6d4c41',
+        '--markdown-italic': '#8d6e63',
+        '--markdown-code-bg': '#efebe9',
+        '--markdown-link': '#a1887f'
+    },
+    forest: {
+        '--bg-primary': '#0d2b1f',
+        '--bg-secondary': '#1b4a32',
+        '--bg-accent-color': '#2a5f42',
+        '--accent-color': '#66bb6a',
+        '--text-main': '#e8f5e9',
+        '--markdown-quote': '#c8e6c9',
+        '--markdown-italic': '#a5d6a7',
+        '--markdown-code-bg': '#1b3b2a',
+        '--markdown-link': '#81c784'
+    },
+    ocean: {
+        '--bg-primary': '#012a4a',
+        '--bg-secondary': '#01497c',
+        '--bg-accent-color': '#014f86',
+        '--accent-color': '#4895ef',
+        '--text-main': '#f1f9ff',
+        '--markdown-quote': '#a9d6e5',
+        '--markdown-italic': '#89c2d9',
+        '--markdown-code-bg': '#023047',
+        '--markdown-link': '#64b5f6'
+    },
+    glacier: {
+        '--bg-primary': '#12232e',              // Dark slate blue
+    '--bg-secondary': '#1b3a4b',            // Deep ocean blue
+    '--bg-accent-color': '#27576e',         // Muted steel blue
+    '--accent-color': '#4aa3df',            // Bright glacier blue
+    '--text-main': '#cbe7f0',               // Soft icy blue
+    '--markdown-quote': '#3fa7b0',          // Teal-ish cyan
+    '--markdown-italic': '#70c1d6',         // Pale cyan
+    '--markdown-code-bg': '#1e4054',        // Dark steel blue background
+    '--markdown-link': '#5bc0de'            // Bright blue link
+    },
+    earthy: {
+      
+'--bg-primary': '#2e1a0f',              // Rich brown
+    '--bg-secondary': '#3b2415',            // Slightly warmer
+    '--bg-accent-color': '#5e3921',         // Warm chestnut
+    '--accent-color': '#f4a261',            // Pumpkin orange
+    '--text-main': '#fff3e0',               // Cream
+    '--markdown-quote': '#e76f51',          // Burnt coral
+    '--markdown-italic': '#f6bd60',         // Golden wheat
+    '--markdown-code-bg': '#4e342e',        // Deep bark
+    '--markdown-link': '#ffa07a'            // Soft salmon
+
+},
+lavender: {
+    '--bg-primary': '#1c152b',           // Midnight lavender
+    '--bg-secondary': '#2a1f3d',         // Plum shadow
+    '--bg-accent-color': '#4b3a66',      // Dusty purple
+    '--accent-color': '#a58fd5',         // Light lavender accent
+    '--text-main': '#f2eaff',            // Pale lavender-white
+    '--markdown-quote': '#7c5fb3',       // Regal purple
+    '--markdown-italic': '#bba3e0',      // Muted violet
+    '--markdown-code-bg': '#332544',     // Deep lilac
+    '--markdown-link': '#d1b3ff'         // Lavender-pink
+},
+    light: {
+        '--bg-primary': '#ffffff',
+        '--bg-secondary': '#f8f9fa',
+        '--bg-accent-color': '#e9ecef',
+        '--accent-color': '#e9ecef',
+        '--text-main': '#212529',
+        '--markdown-quote': '#6c757d',
+        '--markdown-italic': '#0d6efd',
+        '--markdown-code-bg': '#f8f9fa',
+        '--markdown-link': '#0a58ca'
+    }
 };
 
+            function createFullscreenButton() {
+                // Create fullscreen toggle button
+                const fullscreenBtn = document.createElement('button');
+                fullscreenBtn.id = 'fullscreen-btn';
+                fullscreenBtn.textContent = 'Enter Fullscreen';
+                fullscreenBtn.className = 'w-full bg-accent-color hover:bg-accent-hover text-white font-bold py-2 px-4 rounded-lg transition duration-200 mt-2';
 
-function createFullscreenButton() {
-    // Create fullscreen toggle button
-    const fullscreenBtn = document.createElement('button');
-    fullscreenBtn.id = 'fullscreen-btn';
-    fullscreenBtn.textContent = 'Enter Fullscreen';
-    fullscreenBtn.className = 'w-full bg-accent-color hover:bg-accent-hover text-white font-bold py-2 px-4 rounded-lg transition duration-200 mt-2';
-    
-    fullscreenBtn.onclick = toggleFullscreen;
-           
+                fullscreenBtn.onclick = toggleFullscreen;
 
-    const themeSettings = document.querySelector('#settings-accordion details:last-child');
-    if (themeSettings) {
-        const themeContent = themeSettings.querySelector('div');
-        if (themeContent) {
-            themeContent.appendChild(fullscreenBtn);
-        }
-    }
-}
 
-function toggleFullscreen() {
-    const element = document.documentElement;
-    
-    if (!isFullscreen) {
-        // Enter fullscreen
-        if (element.requestFullscreen) {
-            element.requestFullscreen();
-        } else if (element.webkitRequestFullscreen) {
-            element.webkitRequestFullscreen();
-        }
-        isFullscreen = true;
-        
-        // Update button text
-        const fullscreenBtn = document.getElementById('fullscreen-btn');
-        if (fullscreenBtn) {
-            fullscreenBtn.textContent = 'Exit Fullscreen';
-        }
-    } else {
-        // Exit fullscreen
-        if (document.exitFullscreen) {
-            document.exitFullscreen();
-        } else if (document.webkitExitFullscreen) {
-            document.webkitExitFullscreen();
-        }
-        isFullscreen = false;
-        
-        // Update button text
-        const fullscreenBtn = document.getElementById('fullscreen-btn');
-        if (fullscreenBtn) {
-            fullscreenBtn.textContent = 'Enter Fullscreen';
-        }
-    }
-}
-
-// Add this to your existing event listeners section:
-document.addEventListener('DOMContentLoaded', function() {
-    // Check if we're on mobile and add the button
-    if (/Mobi|Android/i.test(navigator.userAgent)) {
-        createFullscreenButton();
-        
-        // Listen for fullscreen change events
-        document.addEventListener('fullscreenchange', function() {
-            isFullscreen = !isFullscreen;
-            const fullscreenBtn = document.getElementById('fullscreen-btn');
-            if (fullscreenBtn) {
-                fullscreenBtn.textContent = isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen';
+                const themeSettings = document.querySelector('#settings-accordion details:last-child');
+                if (themeSettings) {
+                    const themeContent = themeSettings.querySelector('div');
+                    if (themeContent) {
+                        themeContent.appendChild(fullscreenBtn);
+                    }
+                }
             }
-        });
-        
-        // For Safari
-        document.addEventListener('webkitfullscreenchange', function() {
-            isFullscreen = !isFullscreen;
-            const fullscreenBtn = document.getElementById('fullscreen-btn');
-            if (fullscreenBtn) {
-                fullscreenBtn.textContent = isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen';
-            }
-        });
-    }
-});
 
-        // Fixed: Proper toggle function that works with the button
- 
+            function toggleFullscreen() {
+                const element = document.documentElement;
+
+                if (!isFullscreen) {
+                    // Enter fullscreen
+                    if (element.requestFullscreen) {
+                        element.requestFullscreen();
+                    } else if (element.webkitRequestFullscreen) {
+                        element.webkitRequestFullscreen();
+                    }
+                    isFullscreen = true;
+
+                    // Update button text
+                    const fullscreenBtn = document.getElementById('fullscreen-btn');
+                    if (fullscreenBtn) {
+                        fullscreenBtn.textContent = 'Exit Fullscreen';
+                    }
+                } else {
+                    // Exit fullscreen
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    } else if (document.webkitExitFullscreen) {
+                        document.webkitExitFullscreen();
+                    }
+                    isFullscreen = false;
+
+                    // Update button text
+                    const fullscreenBtn = document.getElementById('fullscreen-btn');
+                    if (fullscreenBtn) {
+                        fullscreenBtn.textContent = 'Enter Fullscreen';
+                    }
+                }
+            }
+
+            // Add this to your existing event listeners section:
+            document.addEventListener('DOMContentLoaded', function () {
+                // Check if we're on mobile and add the button
+                if (/Mobi|Android/i.test(navigator.userAgent)) {
+                    createFullscreenButton();
+
+                    // Listen for fullscreen change events
+                    document.addEventListener('fullscreenchange', function () {
+                        isFullscreen = !isFullscreen;
+                        const fullscreenBtn = document.getElementById('fullscreen-btn');
+                        if (fullscreenBtn) {
+                            fullscreenBtn.textContent = isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen';
+                        }
+                    });
+
+                    // For Safari
+                    document.addEventListener('webkitfullscreenchange', function () {
+                        isFullscreen = !isFullscreen;
+                        const fullscreenBtn = document.getElementById('fullscreen-btn');
+                        if (fullscreenBtn) {
+                            fullscreenBtn.textContent = isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen';
+                        }
+                    });
+                }
+            });
+
+            // Fixed: Proper toggle function that works with the button
+
 
             const applyTheme = (themeName) => {
                 const theme = PRESET_THEMES[themeName];
@@ -1158,7 +1224,7 @@ document.addEventListener('DOMContentLoaded', function() {
             };
 
             // Add a fullscreen button or trigger on first user interaction
-// Add this to your existing JavaScript
+            // Add this to your existing JavaScript
 
 
 
@@ -1180,7 +1246,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     return response.json();
                 } catch (error) {
                     console.error(`API call to ${endpoint} failed:`, error);
-       
+
                     throw error;
                 }
             };
@@ -1200,7 +1266,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     const charDiv = document.createElement('div');
                     charDiv.innerHTML = `
 <div data-id="${char.id}" class="character-item w-full flex items-center mt-2 p-2 rounded-lg cursor-pointer ${selectedCharacterId === char.id ? 'bg-accent-color text-white' : 'hover:bg-accent-color '}">
-    <img src="${char.avatar_url || 'https://placehold.co/40x40/374151/9ca3af?text=AI'}" class="w-12 h-12 rounded-full mr-3 object-cover">
+    <img src="${char.avatar_url || 'data/Icons/AI.png'}" class="w-12 h-12 rounded-full mr-3 object-cover">
     <span class="font-semibold">${char.name}</span>
     <div class="ml-auto flex space-x-1">
         <button data-edit-char="${char.id}" class="p-1 hover:text-blue-400" title="Edit Character">
@@ -1221,59 +1287,59 @@ document.addEventListener('DOMContentLoaded', function() {
             // Modify the fetchAndRenderChatList function to include delete button for chats:
             // Updated fetchAndRenderChatList function:
             const fetchAndRenderChatList = async (charId) => {
-    const chatIds = await apiCall(`/characters/${charId}/chats`);
-    const container = $(`#chats-for-${charId}`);
-    if (!container) return;
+                const chatIds = await apiCall(`/characters/${charId}/chats`);
+                const container = $(`#chats-for-${charId}`);
+                if (!container) return;
 
-    container.innerHTML = '';
+                container.innerHTML = '';
 
-    if (chatIds.length === 0) {
-        const newChatBtn = document.createElement('button');
-        newChatBtn.textContent = 'Start New Chat';
-        newChatBtn.className = 'block w-full text-left text-sm p-1 px-2 rounded hover:bg-accent-color ';
-        newChatBtn.addEventListener('click', async () => {
-            const newChatId = await createNewChat(charId);
-            await fetchAndRenderChatList(charId);
-            selectChat(newChatId);
-        });
-        container.appendChild(newChatBtn);
-        return;
-    }
+                if (chatIds.length === 0) {
+                    const newChatBtn = document.createElement('button');
+                    newChatBtn.textContent = 'Start New Chat';
+                    newChatBtn.className = 'block w-full text-left text-sm p-1 px-2 rounded hover:bg-accent-color ';
+                    newChatBtn.addEventListener('click', async () => {
+                        const newChatId = await createNewChat(charId);
+                        await fetchAndRenderChatList(charId);
+                        selectChat(newChatId);
+                    });
+                    container.appendChild(newChatBtn);
+                    return;
+                }
 
-    // Render existing chats
-    chatIds.forEach(chatId => {
-        const chatBtn = document.createElement('button');
-        chatBtn.dataset.chatId = chatId;
-        chatBtn.className = `block w-full text-left text-sm p-1 px-2 rounded relative ${selectedChatId === chatId ? 'bg-accent-color' : 'hover:bg-accent-color '}`;
-        const date = new Date(parseInt(chatId) * 1000);
-        const formattedDate = date.toLocaleString('en-US', {
-            month: 'numeric',
-            day: 'numeric',
-            year: 'numeric',
-            hour: 'numeric',
-            minute: '2-digit',
-            hour12: true
-        });
-        chatBtn.textContent = `Chat - ${formattedDate}`;
+                // Render existing chats
+                chatIds.forEach(chatId => {
+                    const chatBtn = document.createElement('button');
+                    chatBtn.dataset.chatId = chatId;
+                    chatBtn.className = `block w-full text-left text-sm p-1 px-2 rounded relative ${selectedChatId === chatId ? 'bg-accent-color' : 'hover:bg-accent-color '}`;
+                    const date = new Date(parseInt(chatId) * 1000);
+                    const formattedDate = date.toLocaleString('en-US', {
+                        month: 'numeric',
+                        day: 'numeric',
+                        year: 'numeric',
+                        hour: 'numeric',
+                        minute: '2-digit',
+                        hour12: true
+                    });
+                    chatBtn.textContent = `Chat - ${formattedDate}`;
 
-        const deleteBtn = document.createElement('button');
-        deleteBtn.innerHTML = `<svg class="w-4 h-4 text-red-400 hover:text-red-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.innerHTML = `<svg class="w-4 h-4 text-red-400 hover:text-red-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
         </svg>`;
-        deleteBtn.className = "absolute right-2 top-1/2 transform -translate-y-1/2 p-0.5";
-        deleteBtn.title = "Delete Chat";
-        deleteBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            deleteChat(charId, chatId);
-        });
-        chatBtn.appendChild(deleteBtn);
-        container.appendChild(chatBtn);
-    });
+                    deleteBtn.className = "absolute right-2 top-1/2 transform -translate-y-1/2 p-0.5";
+                    deleteBtn.title = "Delete Chat";
+                    deleteBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        deleteChat(charId, chatId);
+                    });
+                    chatBtn.appendChild(deleteBtn);
+                    container.appendChild(chatBtn);
+                });
 
-    if (selectedChatId && selectedCharacterId === charId) {
-        updateChatSelectionUI(charId, selectedChatId);
-    }
-};
+                if (selectedChatId && selectedCharacterId === charId) {
+                    updateChatSelectionUI(charId, selectedChatId);
+                }
+            };
 
 
 
@@ -1292,101 +1358,102 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Add this function to save edited character:
             const handleSaveEditedCharacter = async (e) => {
-    e.preventDefault();
+                e.preventDefault();
 
-    const charId = editCharIdInput.value;
-    const name = editCharNameInput.value.trim();
-    const description = editCharDescInput.value.trim();
-    let avatar_url = '';
+                const charId = editCharIdInput.value;
+                const name = editCharNameInput.value.trim();
+                const description = editCharDescInput.value.trim();
+                let avatar_url = '';
 
-    // Handle avatar upload
-    if (editCharAvatarInput.files && editCharAvatarInput.files[0]) {
-        const formData = new FormData();
-        formData.append('image', editCharAvatarInput.files[0]);
+                // Handle avatar upload
+                if (editCharAvatarInput.files && editCharAvatarInput.files[0]) {
+                    const formData = new FormData();
+                    formData.append('image', editCharAvatarInput.files[0]);
 
-        try {
-            const response = await fetch('/api/upload-image', {
-                method: 'POST',
-                body: formData
-            });
-            const result = await response.json();
-            avatar_url = result.url;
-        } catch (error) {
-            console.error('Image upload failed:', error);
-            alert('Failed to upload avatar');
-            return;
-        }
-    } else {
-        const character = characters.find(c => c.id === charId);
-        if (character && character.avatar_url) {
-            avatar_url = character.avatar_url;
-        }
-    }
-
-    if (!name || !description) return;
-
-    try {
-        // Update character on backend
-        const response = await fetch(`${API_BASE_URL}/api/characters/${charId}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, description, avatar_url }),
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const updatedCharacter = await response.json();
-
-        editCharModal.classList.add('hidden');
-        
-        // ✅ FIXED SOLUTION - AUTO-SELECT LAST CHAT AFTER EDITING CHARACTER
-        characters = await apiCall('/characters'); // Get fresh data including updates
-        
-        if (selectedCharacterId) {
-            await fetchAndRenderCharacters();
-            
-            // Re-render the chat list 
-            await fetchAndRenderChatList(selectedCharacterId);
-            
-            // Auto-select last chat if none is selected - FIXED VERSION
-            if (!selectedChatId) {
-                try {
-                    const chatIds = await apiCall(`/characters/${selectedCharacterId}/chats`);
-                    if (chatIds.length > 0) {
-                        // Sort chats by timestamp in descending order to get latest first
-                        // Since chat IDs are timestamps, we can sort numerically
-                        const sortedChatIds = [...chatIds].sort((a, b) => parseInt(b) - parseInt(a));
-                        const latestChatId = sortedChatIds[0];
-                        
-                        // Select the last chat and update UI
-                        await selectChat(latestChatId);
+                    try {
+                        const response = await fetch('/api/upload-image', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        const result = await response.json();
+                        avatar_url = result.url;
+                    } catch (error) {
+                        console.error('Image upload failed:', error);
+                        alert('Failed to upload avatar');
+                        return;
                     }
-                } catch (error) {
-                    console.error("Failed to auto-select last chat:", error);
+                } else {
+                    const character = characters.find(c => c.id === charId);
+                    if (character && character.avatar_url) {
+                        avatar_url = character.avatar_url;
+                    }
                 }
-            } else {
-                // If a chat was already selected, just update the UI for that chat
-                if (selectedChatId) {
-                    const allChatButtons = document.querySelectorAll(`#chats-for-${selectedCharacterId} button[data-chat-id]`);
-                    allChatButtons.forEach(btn => {
-                        if (btn.dataset.chatId === selectedChatId) {
-                            btn.classList.add('bg-accent-color');
-                            btn.style.backgroundColor = 'var(--accent-color)';
-                        } else {
-                            btn.classList.remove('bg-accent-color');
-                        }
-                    });
-                }
-            }
-        }
 
-    } catch (error) {
-        console.error("Failed to update character:", error);
-        alert("Failed to update character");
-    }
-};
+                if (!name || !description) return;
+
+                try {
+                    // Update character on backend
+                    const response = await fetch(`${API_BASE_URL}/api/characters/${charId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ name, description, avatar_url }),
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const updatedCharacter = await response.json();
+
+                    editCharModal.classList.add('hidden');
+
+                    //auto select last chat after edit
+
+                    characters = await apiCall('/characters'); // Get fresh data including updates
+
+                    if (selectedCharacterId) {
+                        await fetchAndRenderCharacters();
+
+                        // Re-render the chat list 
+                        await fetchAndRenderChatList(selectedCharacterId);
+
+                        // Auto-select last chat if none is selected - FIXED VERSION
+                        if (!selectedChatId) {
+                            try {
+                                const chatIds = await apiCall(`/characters/${selectedCharacterId}/chats`);
+                                if (chatIds.length > 0) {
+                                    // Sort chats by timestamp in descending order to get latest first
+                                    // Since chat IDs are timestamps, we can sort numerically
+                                    const sortedChatIds = [...chatIds].sort((a, b) => parseInt(b) - parseInt(a));
+                                    const latestChatId = sortedChatIds[0];
+
+                                    // Select the last chat and update UI
+                                    await selectChat(latestChatId);
+                                }
+                            } catch (error) {
+                                console.error("Failed to auto-select last chat:", error);
+                            }
+                        } else {
+                            // If a chat was already selected, just update the UI for that chat
+                            if (selectedChatId) {
+                                const allChatButtons = document.querySelectorAll(`#chats-for-${selectedCharacterId} button[data-chat-id]`);
+                                allChatButtons.forEach(btn => {
+                                    if (btn.dataset.chatId === selectedChatId) {
+                                        btn.classList.add('bg-accent-color');
+                                        btn.style.backgroundColor = 'var(--accent-color)';
+                                    } else {
+                                        btn.classList.remove('bg-accent-color');
+                                    }
+                                });
+                            }
+                        }
+                    }
+
+                } catch (error) {
+                    console.error("Failed to update character:", error);
+                    alert("Failed to update character");
+                }
+            };
 
             // Add this function to handle character updates via PUT request:
             const updateCharacter = async (charId, updatedData) => {
@@ -1415,37 +1482,37 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // --- Chat Window Functions ---
             const renderChatHistory = () => {
-    chatWindow.innerHTML = '';
-    emptyState.classList.add('hidden');
-    if (chatHistory.length === 0) {
-        chatWindow.innerHTML = '<p class="text-center text-muted">This is the beginning of your conversation.</p>';
-        return;
-    }
-    chatHistory.forEach((msg, index) => appendMessage(msg.role, msg.content, index));
-};
+                chatWindow.innerHTML = '';
+                emptyState.classList.add('hidden');
+                if (chatHistory.length === 0) {
+                    chatWindow.innerHTML = '<p class="text-center text-muted">This is the beginning of your conversation.</p>';
+                    return;
+                }
+                chatHistory.forEach((msg, index) => appendMessage(msg.role, msg.content, index));
+            };
 
 
-const appendMessage = (role, text, index) => {
-    const character = characters.find(c => c.id === selectedCharacterId);
-    
-    // Check if user was at the bottom before appending
-    const previousIsAtBottom = isUserAtBottom;
-    
-    let avatarUrl;
-    if (role === 'user') {
-        const customAvatar = localStorage.getItem('userAvatar');
-        avatarUrl = customAvatar || 'https://placehold.co/40x40/4f46e5/ffffff?text=U';
-    } else {
-        avatarUrl = character?.avatar_url || 'https://placehold.co/40x40/374151/9ca3af?text=AI';
-    }
+            const appendMessage = (role, text, index) => {
+                const character = characters.find(c => c.id === selectedCharacterId);
 
-    const messageBubble = document.createElement('div');
-    messageBubble.className = `message-bubble ${role === 'user' ? 'justify-end' : ''}`;
+                // Check if user was at the bottom before appending
+                const previousIsAtBottom = isUserAtBottom;
 
-    // Parse markdown with proper styling for final messages
-    const parsedText = parseMarkdownForStreaming(text);
-    
-    messageBubble.innerHTML = `
+                let avatarUrl;
+                if (role === 'user') {
+                    const customAvatar = localStorage.getItem('userAvatar');
+                    avatarUrl = customAvatar || 'data/Icons/User.png';
+                } else {
+                    avatarUrl = character?.avatar_url || 'data/Icons/AI.png';
+                }
+
+                const messageBubble = document.createElement('div');
+                messageBubble.className = `message-bubble ${role === 'user' ? 'justify-end' : ''}`;
+
+                // Parse markdown with proper styling for final messages
+                const parsedText = renderMarkdown(text);
+
+                messageBubble.innerHTML = `
         <img src="${avatarUrl}" class="w-12 h-12 rounded-full object-cover ${role === 'user' ? 'order-2' : ''}">
         <div class="message-content ${role === 'user' ? 'user-message' : 'assistant-message'}">
             ${parsedText}
@@ -1457,340 +1524,344 @@ const appendMessage = (role, text, index) => {
         </div>
     `;
 
-    // Add hover effect to show actions
-    messageBubble.classList.add('group');
+                // Add hover effect to show actions
+                messageBubble.classList.add('group');
 
-    chatWindow.appendChild(messageBubble);
-    
-    // Only auto-scroll if user was at the bottom previously
-    if (previousIsAtBottom) {
-        chatWindow.scrollTop = chatWindow.scrollHeight;
-    }
-};
+                chatWindow.appendChild(messageBubble);
 
-const updateStreamingBubble = (bubble, content) => {
-    const contentElement = bubble.querySelector('.streaming-content');
-    if (contentElement) {
-        // Parse markdown for streaming content with proper styling
-        let parsedText = parseMarkdownForStreaming(content);
-        
-        // Ensure CSS variables are applied even during streaming
-        parsedText = parsedText.replace(/class="markdown-italic"/g, 'class="markdown-italic" style="color: var(--markdown-italic, #a5b4fc)"');
-        parsedText = parsedText.replace(/class="markdown-link"/g, 'class="markdown-link" style="color: var(--markdown-link, #60a5fa)"');
-        parsedText = parsedText.replace(/class="markdown-quote"/g, 'class="markdown-quote" style="color: var(--markdown-quote, #f6f6f6)"');
-        
-        contentElement.innerHTML = parsedText;
-        
-        // Check if user is at or near the bottom
-        const scrollTop = chatWindow.scrollTop;
-        const scrollHeight = chatWindow.scrollHeight;
-        const clientHeight = chatWindow.clientHeight;
-        const isNearBottom = (scrollHeight - scrollTop - clientHeight) < 100; // Within 100px of bottom
-        
-        // Auto-scroll if user was at the bottom or is near bottom
-        if (isUserAtBottom || isNearBottom) {
-            chatWindow.scrollTop = chatWindow.scrollHeight;
-        }
-    }
-};
+                // Only auto-scroll if user was at the bottom previously
+                if (previousIsAtBottom) {
+                    chatWindow.scrollTop = chatWindow.scrollHeight;
+                }
+            };
 
+            const updateStreamingBubble = (bubble, content) => {
+                const contentElement = bubble.querySelector('.streaming-content');
+                if (contentElement) {
+                    // Parse markdown for streaming content with proper styling
+                    let parsedText = renderMarkdown(content);
 
-const regenerateMessage = async (index) => {
-    if (isGenerating) return;
-    isGenerating = true;
+                    // Ensure CSS variables are applied even during streaming
+                    parsedText = parsedText.replace(/class="markdown-italic"/g, 'class="markdown-italic" style="color: var(--markdown-italic, #a5b4fc)"');
+                    parsedText = parsedText.replace(/class="markdown-link"/g, 'class="markdown-link" style="color: var(--markdown-link, #60a5fa)"');
+                    parsedText = parsedText.replace(/class="markdown-quote"/g, 'class="markdown-quote" style="color: var(--markdown-quote, #f6f6f6)"');
 
-    const isUserAtBottom = chatWindow.scrollHeight - chatWindow.clientHeight <= chatWindow.scrollTop + 1;
+                    contentElement.innerHTML = renderMarkdown(content);
 
-    console.log("Attempting to regenerate message at index:", index);
-    console.log("Selected character ID:", selectedCharacterId);
-    console.log("Selected chat ID:", selectedChatId);
-    console.log("Chat history length:", chatHistory.length);
+                    // Check if user is at or near the bottom
+                    const scrollTop = chatWindow.scrollTop;
+                    const scrollHeight = chatWindow.scrollHeight;
+                    const clientHeight = chatWindow.clientHeight;
+                    const isNearBottom = (scrollHeight - scrollTop - clientHeight) < 100; // Within 100px of bottom
 
-    // Auto-select last chat if none is selected
-    if (!selectedChatId && selectedCharacterId) {
-        console.log("No chat selected, auto-selecting last chat...");
-
-        try {
-            const chatIds = await apiCall(`/characters/${selectedCharacterId}/chats`);
-            if (chatIds.length > 0) {
-                const latestChatId = chatIds[chatIds.length - 1];
-                console.log("Auto-selecting last chat:", latestChatId);
-
-                await selectChat(latestChatId);
-
-                // Wait for chatHistory to load before retrying
-                const waitForChatHistory = async (retries = 10) => {
-                    if (chatHistory.length > 0) {
-                        console.log("chatHistory is ready, retrying regeneration...");
-                        isGenerating = false;
-                        await regenerateMessage(index);
-                    } else if (retries > 0) {
-                        setTimeout(() => waitForChatHistory(retries - 1), 100);
-                    } else {
-                        console.error("Chat history not loaded after retries");
-                        isGenerating = false;
+                    // Auto-scroll if user was at the bottom or is near bottom
+                    if (isUserAtBottom || isNearBottom) {
+                        chatWindow.scrollTop = chatWindow.scrollHeight;
                     }
-                };
+                }
+            };
 
-                waitForChatHistory();
-                return;
-            } else {
-                console.error("No chats available to regenerate from");
-                isGenerating = false;
-                return;
-            }
-        } catch (error) {
-            console.error("Failed to get chat list:", error);
-            isGenerating = false;
-            return;
-        }
-    }
 
-    // Validate assistant message
-    if (index <= 0 || chatHistory[index]?.role !== 'assistant') {
-        console.error("Invalid index or not an assistant message");
-        isGenerating = false;
-        return;
-    }
+            const regenerateMessage = async (index) => {
+                if (isGenerating) return;
+                isGenerating = true;
 
-    const userMessageIndex = index - 1;
+                const isUserAtBottom = chatWindow.scrollHeight - chatWindow.clientHeight <= chatWindow.scrollTop + 1;
 
-    // Validate index range
-    if (userMessageIndex < 0 || userMessageIndex >= chatHistory.length) {
-        console.error("Invalid user message index:", userMessageIndex);
-        isGenerating = false;
-        return;
-    }
+                console.log("Attempting to regenerate message at index:", index);
+                console.log("Selected character ID:", selectedCharacterId);
+                console.log("Selected chat ID:", selectedChatId);
+                console.log("Chat history length:", chatHistory.length);
 
-    const userPrompt = chatHistory[userMessageIndex]?.content;
+                // Auto-select last chat if none is selected
+                if (!selectedChatId && selectedCharacterId) {
+                    console.log("No chat selected, auto-selecting last chat...");
 
-    if (!selectedCharacterId) {
-        console.error("No character selected for regeneration");
-        isGenerating = false;
-        return;
-    }
+                    try {
+                        const chatIds = await apiCall(`/characters/${selectedCharacterId}/chats`);
+                        if (chatIds.length > 0) {
+                            const latestChatId = chatIds[chatIds.length - 1];
+                            console.log("Auto-selecting last chat:", latestChatId);
 
-    if (!userPrompt || userPrompt.trim() === '') {
-        console.error("Empty or missing user prompt for regeneration");
-        isGenerating = false;
-        return;
-    }
+                            await selectChat(latestChatId);
 
-    const character = characters.find(c => c.id === selectedCharacterId);
-    if (!character) {
-        console.error("Selected character not found in local cache");
-        isGenerating = false;
-        return;
-    }
+                            // Wait for chatHistory to load before retrying
+                            const waitForChatHistory = async (retries = 10) => {
+                                if (chatHistory.length > 0) {
+                                    console.log("chatHistory is ready, retrying regeneration...");
+                                    isGenerating = false;
+                                    await regenerateMessage(index);
+                                } else if (retries > 0) {
+                                    setTimeout(() => waitForChatHistory(retries - 1), 100);
+                                } else {
+                                    console.error("Chat history not loaded after retries");
+                                    isGenerating = false;
+                                }
+                            };
 
-    // Add loading indicator
-    const loadingIndicator = document.createElement('div');
-    loadingIndicator.innerHTML = '<p class="text-center text-muted animate-pulse">Regenerating...</p>';
-    chatWindow.appendChild(loadingIndicator);
-    chatWindow.scrollTop = chatWindow.scrollHeight;
+                            waitForChatHistory();
+                            return;
+                        } else {
+                            console.error("No chats available to regenerate from");
+                            isGenerating = false;
+                            return;
+                        }
+                    } catch (error) {
+                        console.error("Failed to get chat list:", error);
+                        isGenerating = false;
+                        return;
+                    }
+                }
 
-    try {
-        // Create abort controller for cancellation
-        abortController = new AbortController();
+                // Validate assistant message
+                if (index <= 0 || chatHistory[index]?.role !== 'assistant') {
+                    console.error("Invalid index or not an assistant message");
+                    isGenerating = false;
+                    return;
+                }
 
-        const response = await fetch(`${API_BASE_URL}/api/chat/stream`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                character_id: selectedCharacterId,
-                chat_id: selectedChatId,
-                message: userPrompt,
-                history_override: chatHistory.slice(0, index),
-                mode: 'chat',
-                user_persona: userPersonaInput.value,
-                llm_settings: getLLMSettings(),
-                system_prompt: character.description
-            }),
-            signal: abortController.signal
-        });
+                const userMessageIndex = index - 1;
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
+                // Validate index range
+                if (userMessageIndex < 0 || userMessageIndex >= chatHistory.length) {
+                    console.error("Invalid user message index:", userMessageIndex);
+                    isGenerating = false;
+                    return;
+                }
 
-        // Handle streaming response - create a proper streaming bubble like in handleSendMessage
-        const streamingBubble = document.createElement('div');
-        streamingBubble.className = 'message-bubble flex items-start gap-3 mb-4';
-        streamingBubble.id = `streaming-regen-${index}`; // Unique ID for regeneration
-        
-        // Get character avatar for the assistant
-        const avatarUrl = character?.avatar_url || 'https://placehold.co/40x40/374151/9ca3af?text=AI';
-        
-        streamingBubble.innerHTML = `
+                const userPrompt = chatHistory[userMessageIndex]?.content;
+
+                if (!selectedCharacterId) {
+                    console.error("No character selected for regeneration");
+                    isGenerating = false;
+                    return;
+                }
+
+                if (!userPrompt || userPrompt.trim() === '') {
+                    console.error("Empty or missing user prompt for regeneration");
+                    isGenerating = false;
+                    return;
+                }
+
+                const character = characters.find(c => c.id === selectedCharacterId);
+                if (!character) {
+                    console.error("Selected character not found in local cache");
+                    isGenerating = false;
+                    return;
+                }
+
+                // Add loading indicator
+                const loadingIndicator = document.createElement('div');
+                loadingIndicator.innerHTML = '<p class="text-center text-muted animate-pulse">Regenerating...</p>';
+                chatWindow.appendChild(loadingIndicator);
+                chatWindow.scrollTop = chatWindow.scrollHeight;
+
+                try {
+                    // Create abort controller for cancellation
+                    abortController = new AbortController();
+
+                    const response = await fetch(`${API_BASE_URL}/api/chat/stream`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            character_id: selectedCharacterId,
+                            chat_id: selectedChatId,
+                            message: userPrompt,
+                            history_override: chatHistory.slice(0, index),
+                            mode: 'chat',
+                            user_persona: userPersonaInput.value,
+                            llm_settings: getLLMSettings(),
+                            system_prompt: character.description
+                        }),
+                        signal: abortController.signal
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    // Handle streaming response - create a proper streaming bubble like in handleSendMessage
+                    const streamingBubble = document.createElement('div');
+                    streamingBubble.className = 'message-bubble flex items-start gap-3 mb-4';
+                    streamingBubble.id = `streaming-regen-${index}`; // Unique ID for regeneration
+
+                    // Get character avatar for the assistant
+                    const avatarUrl = character?.avatar_url || 'data/Icons/AI.png';
+
+                    streamingBubble.innerHTML = `
             <img src="${avatarUrl}" class="w-12 h-12 rounded-full object-cover">
-            <div class="p-3 rounded-lg bg-accent-color streaming-content"></div>
+            <div class="message-content streaming-content p-3 rounded-lg bg-accent-color"></div>
         `;
 
-        // Hide the original message temporarily
-        const originalMessageElement = chatWindow.querySelectorAll('.message-bubble')[index];
-        if (originalMessageElement) {
-            originalMessageElement.style.display = 'none';
-        }
+                    // Hide the original message temporarily
+                    const originalMessageElement = chatWindow.querySelectorAll('.message-bubble')[index];
+                    if (originalMessageElement) {
+                        originalMessageElement.style.display = 'none';
+                    }
 
-        // Insert the streaming bubble at the position of the message being regenerated
-        const messageElements = chatWindow.querySelectorAll('.message-bubble');
-        if (index < messageElements.length) {
-            chatWindow.insertBefore(streamingBubble, messageElements[index]);
-        } else {
-            chatWindow.appendChild(streamingBubble);
-        }
-        
-        // Show the cancel button during regeneration
-        const cancelControl = $('#stream-controls');
-        if (cancelControl) {
-            cancelControl.classList.remove('hidden');
-        }
+                    // Insert the streaming bubble at the position of the message being regenerated
+                    const messageElements = chatWindow.querySelectorAll('.message-bubble');
+                    if (index < messageElements.length) {
+                        chatWindow.insertBefore(streamingBubble, messageElements[index]);
+                    } else {
+                        chatWindow.appendChild(streamingBubble);
+                    }
 
-        // Handle streaming response for regeneration
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder('utf-8');
+                    // Show the cancel button during regeneration
+                    const cancelControl = $('#stream-controls');
+                    if (cancelControl) {
+                        cancelControl.classList.remove('hidden');
+                    }
 
-        let assistantMessage = '';
+                    // Handle streaming response for regeneration
+                    const reader = response.body.getReader();
+                    const decoder = new TextDecoder('utf-8');
 
-        while (true) {
-            const { done, value } = await reader.read();
+                    let assistantMessage = '';
 
-            if (done) break;
+                    while (true) {
+                        const { done, value } = await reader.read();
 
-            // Decode the chunk
-            const chunk = decoder.decode(value);
+                        if (done) break;
 
-            // Process streaming data
-            try {
-                const lines = chunk.split('\n\n');
+                        // Decode the chunk
+                        const chunk = decoder.decode(value);
 
-                for (const line of lines) {
-                    if (line.startsWith('data: ')) {
-                        const jsonStr = line.substring(6); // Remove "data: "
-
-                        if (jsonStr === '[DONE]') break;
-
+                        // Process streaming data
                         try {
-                            const data = JSON.parse(jsonStr);
+                            const lines = chunk.split('\n\n');
 
-                            if (data.type === 'content' && data.content) {
-                                assistantMessage += data.content;
-                                
-                                // Update the streaming bubble with new content
-                                updateStreamingBubble(streamingBubble, assistantMessage);
-                            } else if (data.type === 'done') {
-                                break; // Streaming finished
+                            for (const line of lines) {
+                                if (line.startsWith('data: ')) {
+                                    const jsonStr = line.substring(6); // Remove "data: "
+
+                                    if (jsonStr === '[DONE]') break;
+
+                                    try {
+                                        const data = JSON.parse(jsonStr);
+
+                                        if (data.type === 'content' && data.content) {
+                                            assistantMessage += data.content;
+
+                                            // Update the streaming bubble with new content
+                                            updateStreamingBubble(streamingBubble, assistantMessage);
+                                        } else if (data.type === 'done') {
+                                            break; // Streaming finished
+                                        }
+                                    } catch (parseError) {
+                                        const cleanContent = line.substring(6).trim();
+                                        if (cleanContent && !cleanContent.startsWith('[')) {
+                                            assistantMessage += cleanContent;
+                                            updateStreamingBubble(streamingBubble, assistantMessage);
+                                        }
+                                    }
+                                }
                             }
-                        } catch (parseError) {
-                            const cleanContent = line.substring(6).trim();
+                        } catch (e) {
+                            const cleanContent = chunk.trim();
                             if (cleanContent && !cleanContent.startsWith('[')) {
                                 assistantMessage += cleanContent;
                                 updateStreamingBubble(streamingBubble, assistantMessage);
                             }
                         }
                     }
+
+                    // Replace the old message with new content
+                    chatHistory[index] = { ...chatHistory[index], content: assistantMessage };
+
+                    if (streamingBubble) {
+                        streamingBubble.remove();
+                    }
+
+                    // Show the original message again (it will be replaced by renderChatHistory)
+                    if (originalMessageElement) {
+                        originalMessageElement.style.display = '';
+                    }
+
+                    renderChatHistory();
+
+                } catch (error) {
+                    console.error("Regeneration error:", error);
+                    // Show error in the streaming bubble
+                    if (loadingIndicator) {
+                        loadingIndicator.innerHTML = `<div class="p-3 rounded-lg bg-red-100 text-red-800">Error: ${error.message}</div>`;
+                    }
+
+                    // Restore original message display on error
+                    const originalMessageElement = chatWindow.querySelectorAll('.message-bubble')[index];
+                    if (originalMessageElement) {
+                        originalMessageElement.style.display = '';
+                    }
+                } finally {
+                    isGenerating = false;
+
+                    // Hide the cancel button when done
+                    const cancelControl = $('#stream-controls');
+                    if (cancelControl) {
+                        cancelControl.classList.add('hidden');
+                    }
+
+                    if (abortController) {
+                        abortController = null;
+                    }
+                    try {
+    // Check if we're still on the same character, then reselect the current chat
+    if (selectedCharacterId && selectedChatId) {
+        console.log("Re-selecting current chat after regeneration:", selectedChatId);
+        await selectChat(selectedChatId);
+    } else {
+        // If no chat is selected currently, get the latest chat as fallback
+        const chatIds = await apiCall(`/characters/${selectedCharacterId}/chats`);
+        
+        if (chatIds.length > 0) {
+            // Sort to find the newest one (highest timestamp)
+            const sortedChatIds = [...chatIds].sort((a, b) => parseInt(b) - parseInt(a));
+            const latestChatId = sortedChatIds[0];
+            
+            console.log("Latest chat ID:", latestChatId);
+            await selectChat(latestChatId);
+        }
+    }
+} catch (error) {
+    console.error("Failed to auto-select chat after regeneration:", error);
+}
                 }
-            } catch (e) {
-                const cleanContent = chunk.trim();
-                if (cleanContent && !cleanContent.startsWith('[')) {
-                    assistantMessage += cleanContent;
-                    updateStreamingBubble(streamingBubble, assistantMessage);
+            };
+
+            // Add this function near your other helpers:
+            const hasExistingAssistantMessage = (content) => {
+                return chatHistory.some(msg =>
+                    msg.role === 'assistant' && msg.content.trim() === content.trim()
+                );
+            };
+
+
+            const deleteMessage = async (index) => {
+                
+                if (!selectedCharacterId || !selectedChatId) {
+                    console.error("Cannot delete message: No character or chat selected");
+                    return;
                 }
-            }
-        }
 
-        // Replace the old message with new content
-        chatHistory[index] = { ...chatHistory[index], content: assistantMessage };
-        
-        if (streamingBubble) {
-            streamingBubble.remove();
-        }
-        
-        // Show the original message again (it will be replaced by renderChatHistory)
-        if (originalMessageElement) {
-            originalMessageElement.style.display = '';
-        }
-        
-        renderChatHistory();
+                if (index < 0 || index >= chatHistory.length) {
+                    console.error("Invalid message index for deletion:", index);
+                    return;
+                }
 
-    } catch (error) {
-        console.error("Regeneration error:", error);
-        // Show error in the streaming bubble
-        if (loadingIndicator) {
-            loadingIndicator.innerHTML = `<div class="p-3 rounded-lg bg-red-100 text-red-800">Error: ${error.message}</div>`;
-        }
-        
-        // Restore original message display on error
-        const originalMessageElement = chatWindow.querySelectorAll('.message-bubble')[index];
-        if (originalMessageElement) {
-            originalMessageElement.style.display = '';
-        }
-    } finally {
-        isGenerating = false;
-        
-        // Hide the cancel button when done
-        const cancelControl = $('#stream-controls');
-        if (cancelControl) {
-            cancelControl.classList.add('hidden');
-        }
-
-        if (abortController) {
-            abortController = null;
-         }
-         try {
-             console.log("Auto-selecting last chat after regeneration...");
-             const chatIds = await apiCall(`/characters/${selectedCharacterId}/chats`);
-             
-             if (chatIds.length > 0) {
-                 // Sort chats by timestamp in descending order to get latest first
-                 const sortedChatIds = [...chatIds].sort((a, b) => parseInt(b) - parseInt(a));
-                 const latestChatId = sortedChatIds[0];
-                 
-                 console.log("Latest chat ID:", latestChatId);
-                 
-                 // Select the latest chat
-                 await selectChat(latestChatId);
-             }
-         } catch (error) {
-             console.error("Failed to auto-select last chat after regeneration:", error);
-         }
-    }
-};
-
-// Add this function near your other helpers:
-const hasExistingAssistantMessage = (content) => {
-    return chatHistory.some(msg => 
-        msg.role === 'assistant' && msg.content.trim() === content.trim()
-    );
-};
-
-
-const deleteMessage = async (index) => {
-    // ✅ ADD THIS CHECK BEFORE ANYTHING ELSE
-    if (!selectedCharacterId || !selectedChatId) {
-        console.error("Cannot delete message: No character or chat selected");
-        return;
-    }
-    
-    if (index < 0 || index >= chatHistory.length) {
-        console.error("Invalid message index for deletion:", index);
-        return;
-    }
-
-    try {
-        const { new_history } = await apiCall(`/chats/${selectedCharacterId}/${selectedChatId}/delete_message`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ index }),
-        });
-        chatHistory = new_history;
-        renderChatHistory();
-    } catch (error) {
-        console.error("Failed to delete message:", error);
-    }
-};
+                try {
+                    const { new_history } = await apiCall(`/chats/${selectedCharacterId}/${selectedChatId}/delete_message`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ index }),
+                    });
+                    chatHistory = new_history;
+                    renderChatHistory();
+                } catch (error) {
+                    console.error("Failed to delete message:", error);
+                }
+            };
 
             // Add this function to your existing JavaScript (around line ~350 where other delete functions are):
             const deleteChat = async (charId, chatId) => {
@@ -1814,282 +1885,292 @@ const deleteMessage = async (index) => {
 
 
             // --- Selection & State Change ---
-          const selectCharacter = async (charId) => {
-    selectedCharacterId = charId;
-    selectedChatId = null; // Reset chat selection
-    const character = characters.find(c => c.id === charId);
+            const selectCharacter = async (charId) => {
+                selectedCharacterId = charId;
+                selectedChatId = null; // Reset chat selection
+                const character = characters.find(c => c.id === charId);
 
-    chatHeaderText.textContent = character.name;
-    chatInputArea.classList.remove('hidden');
-    newChatBtn.classList.remove('hidden');
-    
-    // Only focus on desktop or non-mobile devices
-    if (!/Mobi|Android/i.test(navigator.userAgent)) {
-        messageInput.focus();
-    }
+                chatHeaderText.textContent = character.name;
+                chatInputArea.classList.remove('hidden');
+                newChatBtn.classList.remove('hidden');
 
-    await fetchAndRenderCharacters(); // Re-render to show selection
+                // Only focus on desktop or non-mobile devices
+                if (!/Mobi|Android/i.test(navigator.userAgent)) {
+                    messageInput.focus();
+                }
 
-    // Add proper highlighting for selected character
-    const allCharItems = document.querySelectorAll('.character-item');
-    allCharItems.forEach(item => {
-        item.classList.remove('selected');
-        if (item.dataset.id === charId) {
-            item.classList.add('selected');
-        }
-    });
+                await fetchAndRenderCharacters(); // Re-render to show selection
 
-    await fetchAndRenderChatList(charId);
-};const selectChat = async (chatId) => {
-    selectedChatId = chatId;
+                // Add proper highlighting for selected character
+                const allCharItems = document.querySelectorAll('.character-item');
+                allCharItems.forEach(item => {
+                    item.classList.remove('selected');
+                    if (item.dataset.id === charId) {
+                        item.classList.add('selected');
+                    }
+                });
 
-    if (selectedCharacterId) {
-        await fetchAndRenderChatList(selectedCharacterId); // Re-render chat list for selection style
-        
-        // Update UI selections properly
-        const allChatButtons = document.querySelectorAll(`#chats-for-${selectedCharacterId} button[data-chat-id]`);
-        allChatButtons.forEach(btn => {
-            if (btn.dataset.chatId === chatId) {
-                btn.classList.add('bg-accent-color');
-                btn.style.backgroundColor = 'var(--accent-color)';
-            } else {
-                btn.classList.remove('bg-accent-color');
-            }
-        });
-        
-        // Load the chat history
-        try {
-            const response = await apiCall(`/chats/${selectedCharacterId}/${chatId}`);
-            chatHistory = response;
-            renderChatHistory();
-        } catch (error) {
-            console.error("Failed to load chat history:", error);
-        }
-    }
-};
+                await fetchAndRenderChatList(charId);
+            }; const selectChat = async (chatId) => {
+                selectedChatId = chatId;
 
-const saveMessageToServer = async (charId, chatId, role, content) => {
-    try {
-        await apiCall(`/chats/${charId}/${chatId}/add_message`, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ role, content })
-        });
-        return true;
-    } catch (error) {
-        console.error("Failed to save message:", error);
-        return false;
-    }
-};
+                if (selectedCharacterId) {
+                    await fetchAndRenderChatList(selectedCharacterId); // Re-render chat list for selection style
+
+                    // Update UI selections properly
+                    const allChatButtons = document.querySelectorAll(`#chats-for-${selectedCharacterId} button[data-chat-id]`);
+                    allChatButtons.forEach(btn => {
+                        if (btn.dataset.chatId === chatId) {
+                            btn.classList.add('bg-accent-color');
+                            btn.style.backgroundColor = 'var(--accent-color)';
+                        } else {
+                            btn.classList.remove('bg-accent-color');
+                        }
+                    });
+
+                    // Load the chat history
+                    try {
+                        const response = await apiCall(`/chats/${selectedCharacterId}/${chatId}`);
+                        chatHistory = response;
+                        renderChatHistory();
+                    } catch (error) {
+                        console.error("Failed to load chat history:", error);
+                    }
+                }
+            };
+
+            const saveMessageToServer = async (charId, chatId, role, content) => {
+                try {
+                    await apiCall(`/chats/${charId}/${chatId}/add_message`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ role, content })
+                    });
+                    return true;
+                } catch (error) {
+                    console.error("Failed to save message:", error);
+                    return false;
+                }
+            };
 
 
-const handleSendMessage = async (e) => {
-    e.preventDefault();
-    const message = messageInput.value.trim();
-    if (!message || !selectedCharacterId || !selectedChatId || isGenerating) return;
+            const handleSendMessage = async (e) => {
+                e.preventDefault();
+                const message = messageInput.value.trim();
+                if (!message || !selectedCharacterId || !selectedChatId || isGenerating) return;
 
-    isGenerating = true;
+                isGenerating = true;
 
-    // Create unique ID for this stream
-    const streamId = Date.now().toString();
+                // Create unique ID for this stream
+                const streamId = Date.now().toString();
 
-    const userMessageIndex = chatHistory.length;
-    // Add user message to history immediately
-    chatHistory.push({ role: 'user', content: message });
-    appendMessage('user', message, userMessageIndex);
-    messageInput.value = '';
-    messageInput.style.height = 'auto';
+                const userMessageIndex = chatHistory.length;
+                // Add user message to history immediately
+                chatHistory.push({ role: 'user', content: message });
+                appendMessage('user', message, userMessageIndex);
+                messageInput.value = '';
+                messageInput.style.height = 'auto';
 
-    // Declare assistantMessage outside the streaming loop
-    let assistantMessage = '';
+                // Declare assistantMessage outside the streaming loop
+                let assistantMessage = '';
 
-    // Create a placeholder for the streaming response
-    const streamingBubble = document.createElement('div');
-    streamingBubble.className = 'message-bubble flex items-start gap-3 mb-4';
-    streamingBubble.id = `streaming-${streamId}`;
-    
-    // Get character avatar for assistant
-    const character = characters.find(c => c.id === selectedCharacterId);
-    const avatarUrl = character?.avatar_url || 'https://placehold.co/40x40/374151/9ca3af?text=AI';
-    
-    streamingBubble.innerHTML = `
+                // Create a placeholder for the streaming response
+                const streamingBubble = document.createElement('div');
+                streamingBubble.className = 'message-bubble flex items-start gap-3 mb-4';
+                streamingBubble.id = `streaming-${streamId}`;
+
+                // Get character avatar for assistant
+                const character = characters.find(c => c.id === selectedCharacterId);
+                const avatarUrl = character?.avatar_url || 'data/Icons/AI.png';
+
+                streamingBubble.innerHTML = `
         <img src="${avatarUrl}" class="w-12 h-12 rounded-full object-cover">
-        <div class="p-3 rounded-lg bg-accent-color streaming-content"></div>
+        <div class="message-content streaming-content p-3 rounded-lg bg-accent-color"></div>
     `;
 
-    chatWindow.appendChild(streamingBubble);
-    
-    // Check if user is at the bottom before scrolling to new message
-    const previousIsAtBottom = isUserAtBottom;
-    if (previousIsAtBottom) {
-        chatWindow.scrollTop = chatWindow.scrollHeight;
-    }
+                chatWindow.appendChild(streamingBubble);
 
-    // Show the cancel button
-    const cancelControl = $('#stream-controls');
-    if (cancelControl) {
-        cancelControl.classList.remove('hidden');
-    }
+                // Check if user is at the bottom before scrolling to new message
+                const previousIsAtBottom = isUserAtBottom;
+                if (previousIsAtBottom) {
+                    chatWindow.scrollTop = chatWindow.scrollHeight;
+                }
 
-    try {
-        abortController = new AbortController();
+                // Show the cancel button
+                const cancelControl = $('#stream-controls');
+                if (cancelControl) {
+                    cancelControl.classList.remove('hidden');
+                }
 
-        const response = await fetch(`${API_BASE_URL}/api/chat/stream`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                character_id: selectedCharacterId,
-                chat_id: selectedChatId,
-                message: message,
-                mode: 'chat',
-                user_persona: userPersonaInput.value,
-                llm_settings: getLLMSettings(),
-            }),
-            signal: abortController.signal
-        });
+                try {
+                    abortController = new AbortController();
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
+                    const response = await fetch(`${API_BASE_URL}/api/chat/stream`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            character_id: selectedCharacterId,
+                            chat_id: selectedChatId,
+                            message: message,
+                            mode: 'chat',
+                            user_persona: userPersonaInput.value,
+                            llm_settings: getLLMSettings(),
+                        }),
+                        signal: abortController.signal
+                    });
 
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder('utf-8');
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
 
-        while (true) {
-            const { done, value } = await reader.read();
+                    const reader = response.body.getReader();
+                    const decoder = new TextDecoder('utf-8');
 
-            if (done) break;
+                    while (true) {
+                        const { done, value } = await reader.read();
 
-            const chunk = decoder.decode(value);
+                        if (done) break;
 
-            try {
-                const lines = chunk.split('\n\n');
-
-                for (const line of lines) {
-                    if (line.startsWith('data: ')) {
-                        const jsonStr = line.substring(6);
-
-                        if (jsonStr === '[DONE]') break;
+                        const chunk = decoder.decode(value);
 
                         try {
-                            const data = JSON.parse(jsonStr);
+                            const lines = chunk.split('\n\n');
 
-                            if (data.type === 'content' && data.content) {
-                                assistantMessage += data.content;
-                                
-                                // Update the streaming bubble with new content
-                                updateStreamingBubble(streamingBubble, assistantMessage);
-                            } else if (data.type === 'done') {
-                                break; 
+                            for (const line of lines) {
+                                if (line.startsWith('data: ')) {
+                                    const jsonStr = line.substring(6);
+
+                                    if (jsonStr === '[DONE]') break;
+
+                                    try {
+                                        const data = JSON.parse(jsonStr);
+
+                                        if (data.type === 'content' && data.content) {
+                                            assistantMessage += data.content;
+
+                                            // Update the streaming bubble with new content
+                                            updateStreamingBubble(streamingBubble, assistantMessage);
+                                        } else if (data.type === 'done') {
+                                            break;
+                                        }
+                                    } catch (parseError) {
+                                        const cleanContent = line.substring(6).trim();
+                                        if (cleanContent && !cleanContent.startsWith('[')) {
+                                            assistantMessage += cleanContent;
+                                            updateStreamingBubble(streamingBubble, assistantMessage);
+                                        }
+                                    }
+                                }
                             }
-                        } catch (parseError) {
-                            const cleanContent = line.substring(6).trim();
+                        } catch (e) {
+                            const cleanContent = chunk.trim();
                             if (cleanContent && !cleanContent.startsWith('[')) {
                                 assistantMessage += cleanContent;
                                 updateStreamingBubble(streamingBubble, assistantMessage);
                             }
                         }
                     }
-                }
-            } catch (e) {
-                const cleanContent = chunk.trim();
-                if (cleanContent && !cleanContent.startsWith('[')) {
-                    assistantMessage += cleanContent;
-                    updateStreamingBubble(streamingBubble, assistantMessage);
-                }
-            }
-        }
 
-        // Add complete message to chat history and remove streaming bubble
-        chatHistory.push({ role: 'assistant', content: assistantMessage });
-
-        if (streamingBubble) {
-            streamingBubble.remove();
-        }
-
-        appendMessage('assistant', assistantMessage, userMessageIndex + 1);
-
-    } catch (error) {
-        console.error("Streaming error:", error);
-        // Handle cancellation properly
-        if (error.name === 'AbortError') {
-            console.log("Stream was cancelled");
-            // Remove the streaming bubble immediately to prevent duplicate
-            if (streamingBubble && streamingBubble.parentNode) {
-                streamingBubble.remove();
-            }
-            // The user message is already in the frontend chatHistory at index 'userMessageIndex'.
-            // We need to save it to the backend if it's not already there.
-            // However, the backend might have already saved it implicitly during streaming if streaming started successfully.
-            // The safest way to ensure consistency is to rely on the frontend state for the cancelled scenario
-            // and potentially sync the full history back to the backend or save the user message explicitly.
-            // Saving the user message explicitly is safer here.
-            try {
-                // Save the user message to the backend history file
-                const userMessageSaved = await saveMessageToServer(selectedCharacterId, selectedChatId, 'user', message);
-                if (!userMessageSaved) {
-                    console.error("Failed to save user message to server on cancel.");
-                    // Decide how to handle this failure (e.g., warn user, keep in frontend only temporarily)
-                } else {
-                    console.log("User message saved to server on cancel.");
-                }
-            } catch (saveUserError) {
-                console.error("Error saving user message to server on cancel:", saveUserError);
-            }
-
-            // Only save partial assistant message if we have content and it's not empty
-            if (assistantMessage && assistantMessage.trim() !== '') {
-                try {
-                    // Save the partial assistant message to backend
-                    const aiMessageSaved = await apiCall(`/chats/${selectedCharacterId}/${selectedChatId}/add_message`, {
-                        method: 'POST',
-                        headers: {'Content-Type': 'application/json'},
-                        body: JSON.stringify({ role: 'assistant', content: assistantMessage })
-                    });
-                    // Add the partial assistant message to local history
-                    // Note: We might need to add the user message to local history again if it wasn't there initially,
-                    // but since we pushed it initially, it should be there already.
-                    // Add the AI message after the user message.
-                    // The user message index is userMessageIndex, so AI should be userMessageIndex + 1
-                    // But if other messages were added since then, we should push it.
-                    // The safest way is to push it, as renderChatHistory will handle the order.
+                    // Add complete message to chat history and remove streaming bubble
                     chatHistory.push({ role: 'assistant', content: assistantMessage });
-                    appendMessage('assistant', assistantMessage, chatHistory.length - 1); // Use new index
-                    console.log("Partial AI message saved to server and UI on cancel.");
-                } catch (saveError) {
-                    console.error("Failed to save partial AI message:", saveError);
-                    // If we can't save the AI message, just remove the streaming bubble
-                    // The user message is already handled above or was initially added.
-                }
-            } else {
-                 console.log("No partial AI message to save on cancel.");
-                 // The user message was handled above. The streaming bubble is removed.
-                 // No need to append an empty AI message.
-            }
-            return; // Exit early if cancelled
-        } else {
-            // Show error in chat for other errors
-            if (streamingBubble) {
-                streamingBubble.innerHTML = `<div class="p-3 rounded-lg bg-red-100 text-red-800">Error: ${error.message}</div>`;
-            }
-        }
-    } finally {
-        isGenerating = false;
-        isStreaming = false;
-        // Hide the cancel button when done
-        if (cancelControl) {
-            cancelControl.classList.add('hidden');
-        }
-        if (abortController) {
-            abortController = null;
+
+                    if (streamingBubble) {
+                        streamingBubble.remove();
+                    }
+
+                    appendMessage('assistant', assistantMessage, userMessageIndex + 1);
+
+                } catch (error) {
+                    console.error("Streaming error:", error);
+                    // Handle cancellation properly
+                    if (error.name === 'AbortError') {
+                        console.log("Stream was cancelled");
+                        // Remove the streaming bubble immediately to prevent duplicate
+                        if (streamingBubble && streamingBubble.parentNode) {
+                            streamingBubble.remove();
+                        }
+                        // The user message is already in the frontend chatHistory at index 'userMessageIndex'.
+                        // We need to save it to the backend if it's not already there.
+                        // However, the backend might have already saved it implicitly during streaming if streaming started successfully.
+                        // The safest way to ensure consistency is to rely on the frontend state for the cancelled scenario
+                        // and potentially sync the full history back to the backend or save the user message explicitly.
+                        // Saving the user message explicitly is safer here.
+                        try {
+                            // Save the user message to the backend history file
+                            const userMessageSaved = await saveMessageToServer(selectedCharacterId, selectedChatId, 'user', message);
+                            if (!userMessageSaved) {
+                                console.error("Failed to save user message to server on cancel.");
+                                // Decide how to handle this failure (e.g., warn user, keep in frontend only temporarily)
+                            } else {
+                                console.log("User message saved to server on cancel.");
+                            }
+                        } catch (saveUserError) {
+                            console.error("Error saving user message to server on cancel:", saveUserError);
+                        }
+
+                        // Only save partial assistant message if we have content and it's not empty
+                        if (assistantMessage && assistantMessage.trim() !== '') {
+                            try {
+                                // Save the partial assistant message to backend
+                                const aiMessageSaved = await apiCall(`/chats/${selectedCharacterId}/${selectedChatId}/add_message`, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ role: 'assistant', content: assistantMessage })
+                                });
+                                // Add the partial assistant message to local history
+                                // Note: We might need to add the user message to local history again if it wasn't there initially,
+                                // but since we pushed it initially, it should be there already.
+                                // Add the AI message after the user message.
+                                // The user message index is userMessageIndex, so AI should be userMessageIndex + 1
+                                // But if other messages were added since then, we should push it.
+                                // The safest way is to push it, as renderChatHistory will handle the order.
+                                chatHistory.push({ role: 'assistant', content: assistantMessage });
+                                appendMessage('assistant', assistantMessage, chatHistory.length - 1); // Use new index
+                                console.log("Partial AI message saved to server and UI on cancel.");
+                            } catch (saveError) {
+                                console.error("Failed to save partial AI message:", saveError);
+                   
+                                // The user message is already handled above or was initially added.
+                            }
+                        } else {
+                            console.log("No partial AI message to save on cancel.");
+                            // The user message was handled above. The streaming bubble is removed.
+                    
+                        }
+                        return; // Exit early if cancelled
+                    } else {
+                        // Show error in chat for other errors
+                        if (streamingBubble) {
+                            streamingBubble.innerHTML = `<div class="p-3 rounded-lg bg-red-100 text-red-800">Error: ${error.message}</div>`;
+                        }
+                    }
+                } finally {
+    isGenerating = false;
+    isStreaming = false;
+    // Hide the cancel button when done
+    if (cancelControl) {
+        cancelControl.classList.add('hidden');
+    }
+    if (abortController) {
+        abortController = null;
+    }
+    
+    // Ensure we keep our current chat selected after streaming
+    if (selectedCharacterId && selectedChatId) {
+        try {
+            await selectChat(selectedChatId);
+        } catch (error) {
+            console.error("Failed to reselect current chat:", error);
         }
     }
-};
+
+                }
+            };
 
             // Update the streaming bubble function to properly handle content
-          
+
             // Add cancellation function (already exists but here for completeness)
             const cancelStreaming = () => {
                 if (abortController) {
@@ -2139,7 +2220,7 @@ const handleSendMessage = async (e) => {
                         alert('Failed to upload avatar');
                         return;
                     }
-                    
+
                 } else {
                     avatar_url = avatarInput.value.trim(); // Fallback to URL input
                 }
@@ -2171,29 +2252,29 @@ const handleSendMessage = async (e) => {
             };
 
             const editMessage = async (index) => {
-    if (!selectedCharacterId || !selectedChatId) {
-        console.error("Cannot edit message: No character or chat selected");
-        return;
-    }
-    
-    if (index < 0 || index >= chatHistory.length) {
-        console.error("Invalid message index for editing:", index);
-        return;
-    }
+                if (!selectedCharacterId || !selectedChatId) {
+                    console.error("Cannot edit message: No character or chat selected");
+                    return;
+                }
 
-    const message = chatHistory[index];
-    const content = message.content;
+                if (index < 0 || index >= chatHistory.length) {
+                    console.error("Invalid message index for editing:", index);
+                    return;
+                }
 
-    // Create edit modal
-    const existingModal = document.getElementById('edit-message-modal');
-    if (existingModal) {
-        document.body.removeChild(existingModal);
-    }
+                const message = chatHistory[index];
+                const content = message.content;
 
-    const editModal = document.createElement('div');
-    editModal.id = 'edit-message-modal';
-    editModal.className = 'fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50';
-    editModal.innerHTML = `
+                // Create edit modal
+                const existingModal = document.getElementById('edit-message-modal');
+                if (existingModal) {
+                    document.body.removeChild(existingModal);
+                }
+
+                const editModal = document.createElement('div');
+                editModal.id = 'edit-message-modal';
+                editModal.className = 'fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50';
+                editModal.innerHTML = `
         <div class="bg-secondary rounded-lg p-6 w-full max-w-2xl shadow-xl">
             <h3 class="text-xl font-bold mb-4">Edit Message</h3>
             <textarea id="edit-message-text" rows="10" 
@@ -2206,76 +2287,76 @@ const handleSendMessage = async (e) => {
         </div>
     `;
 
-    document.body.appendChild(editModal);
+                document.body.appendChild(editModal);
 
-    const saveBtn = editModal.querySelector('#save-edit');
-    const cancelBtn = editModal.querySelector('#cancel-edit');
-    const textarea = editModal.querySelector('#edit-message-text');
+                const saveBtn = editModal.querySelector('#save-edit');
+                const cancelBtn = editModal.querySelector('#cancel-edit');
+                const textarea = editModal.querySelector('#edit-message-text');
 
-    // Auto-resize textarea
-    const resizeTextarea = () => {
-        textarea.style.height = 'auto';
-        textarea.style.height = `${Math.min(textarea.scrollHeight, 400)}px`;
-    };
+                // Auto-resize textarea
+                const resizeTextarea = () => {
+                    textarea.style.height = 'auto';
+                    textarea.style.height = `${Math.min(textarea.scrollHeight, 400)}px`;
+                };
 
-    textarea.addEventListener('input', resizeTextarea);
-    resizeTextarea(); // Initial resize
+                textarea.addEventListener('input', resizeTextarea);
+                resizeTextarea(); // Initial resize
 
-    saveBtn.addEventListener('click', async () => {
-        const newContent = textarea.value.trim();
-        if (newContent === '') return;
+                saveBtn.addEventListener('click', async () => {
+                    const newContent = textarea.value.trim();
+                    if (newContent === '') return;
 
-        try {
-            // Send update to backend
-            const response = await apiCall(`/chats/${selectedCharacterId}/${selectedChatId}/update_message`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ index, content: newContent })
-            });
-            
-            // Update local chat history
-            chatHistory[index].content = newContent;
-            renderChatHistory();
-            
-            document.body.removeChild(editModal);
-        } catch (error) {
-            console.error("Failed to update message:", error);
-            alert("Failed to save changes");
-        }
-    });
+                    try {
+                        // Send update to backend
+                        const response = await apiCall(`/chats/${selectedCharacterId}/${selectedChatId}/update_message`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ index, content: newContent })
+                        });
 
-    cancelBtn.addEventListener('click', () => {
-        document.body.removeChild(editModal);
-    });
+                        // Update local chat history
+                        chatHistory[index].content = newContent;
+                        renderChatHistory();
 
-    // Close modal when clicking outside
-    editModal.addEventListener('click', (e) => {
-        if (e.target === editModal) {
-            document.body.removeChild(editModal);
-        }
-    });
-};
+                        document.body.removeChild(editModal);
+                    } catch (error) {
+                        console.error("Failed to update message:", error);
+                        alert("Failed to save changes");
+                    }
+                });
 
-const style = document.createElement('style');
-style.textContent = `
+                cancelBtn.addEventListener('click', () => {
+                    document.body.removeChild(editModal);
+                });
+
+                // Close modal when clicking outside
+                editModal.addEventListener('click', (e) => {
+                    if (e.target === editModal) {
+                        document.body.removeChild(editModal);
+                    }
+                });
+            };
+
+            const style = document.createElement('style');
+            style.textContent = `
     #edit-message-modal textarea {
         resize: none;
     }
 `;
-document.head.appendChild(style);
+            document.head.appendChild(style);
 
-// Update the message actions click handler to include edit functionality
-chatWindow.addEventListener('click', (e) => {
-    const regenBtn = e.target.closest('.regenerate-btn');
-    const deleteBtn = e.target.closest('.delete-btn');
-    const editBtn = e.target.closest('.edit-btn');
-    
-    if (regenBtn) regenerateMessage(parseInt(regenBtn.dataset.index));
-    if (deleteBtn) deleteMessage(parseInt(deleteBtn.dataset.index));
-    if (editBtn) editMessage(parseInt(editBtn.dataset.index));
-});
+            // Update the message actions click handler to include edit functionality
+            chatWindow.addEventListener('click', (e) => {
+                const regenBtn = e.target.closest('.regenerate-btn');
+                const deleteBtn = e.target.closest('.delete-btn');
+                const editBtn = e.target.closest('.edit-btn');
 
-            
+                if (regenBtn) regenerateMessage(parseInt(regenBtn.dataset.index));
+                if (deleteBtn) deleteMessage(parseInt(deleteBtn.dataset.index));
+                if (editBtn) editMessage(parseInt(editBtn.dataset.index));
+            });
+
+
             const deleteCharacter = async (charId) => {
                 if (!confirm('Are you sure you want to delete this character and all their chats?')) return;
 
@@ -2309,7 +2390,7 @@ chatWindow.addEventListener('click', (e) => {
                 // Persona
                 userPersonaInput.value = localStorage.getItem('userPersona') || '';
                 userAvatarInput.value = localStorage.getItem('userAvatar') || '';
-           
+
                 // LLM Settings
                 const savedLLMSettings = JSON.parse(localStorage.getItem('llmSettings'));
                 if (savedLLMSettings) {
@@ -2328,47 +2409,47 @@ chatWindow.addEventListener('click', (e) => {
 
             // --- Event Listeners ---
             userAvatarInput.addEventListener('input', () => {
-    localStorage.setItem('userAvatar', userAvatarInput.value);
-});
+                localStorage.setItem('userAvatar', userAvatarInput.value);
+            });
 
-userAvatarUpload.addEventListener('change', async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+            userAvatarUpload.addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
 
-    if (!file.type.startsWith('image/')) {
-        alert('Please select an image file.');
-        e.target.value = ''; // Clear the input
-        return;
-    }
+                if (!file.type.startsWith('image/')) {
+                    alert('Please select an image file.');
+                    e.target.value = ''; // Clear the input
+                    return;
+                }
 
-    const formData = new FormData();
-    formData.append('image', file);
+                const formData = new FormData();
+                formData.append('image', file);
 
-    try {
-        const response = await fetch('/api/upload-image', {
-            method: 'POST',
-            body: formData
-        });
+                try {
+                    const response = await fetch('/api/upload-image', {
+                        method: 'POST',
+                        body: formData
+                    });
 
-        if (!response.ok) {
-            throw new Error(`Upload failed: ${response.status}`);
-        }
+                    if (!response.ok) {
+                        throw new Error(`Upload failed: ${response.status}`);
+                    }
 
-        const result = await response.json();
-        const uploadedUrl = result.url;
+                    const result = await response.json();
+                    const uploadedUrl = result.url;
 
-        // Update the URL input field and local storage
-        userAvatarInput.value = uploadedUrl;
-        localStorage.setItem('userAvatar', uploadedUrl);
+                    // Update the URL input field and local storage
+                    userAvatarInput.value = uploadedUrl;
+                    localStorage.setItem('userAvatar', uploadedUrl);
 
-        // Optional: Clear the file input after successful upload
-        e.target.value = '';
-    } catch (error) {
-        console.error('Error uploading user avatar:', error);
-        alert('Failed to upload avatar. Please try again.');
-        e.target.value = ''; // Clear the input on error
-    }
-});
+                    // Optional: Clear the file input after successful upload
+                    e.target.value = '';
+                } catch (error) {
+                    console.error('Error uploading user avatar:', error);
+                    alert('Failed to upload avatar. Please try again.');
+                    e.target.value = ''; // Clear the input on error
+                }
+            });
             document.addEventListener('DOMContentLoaded', async () => {
                 loadSettings();
                 const cancelStreamBtn = $('#cancel-stream-btn');
@@ -2380,15 +2461,15 @@ userAvatarUpload.addEventListener('change', async (e) => {
             });
 
             chatWindow.addEventListener('scroll', () => {
-        const scrollTop = chatWindow.scrollTop;
-        const scrollHeight = chatWindow.scrollHeight;
-        const clientHeight = chatWindow.clientHeight;
-        
-        isUserAtBottom = (scrollHeight - scrollTop - clientHeight) <= 5; // Within 5px of bottom
-        
-        // For the case where user scrolls up and then AI starts streaming
-        shouldAutoScroll = isUserAtBottom;
-    });
+                const scrollTop = chatWindow.scrollTop;
+                const scrollHeight = chatWindow.scrollHeight;
+                const clientHeight = chatWindow.clientHeight;
+
+                isUserAtBottom = (scrollHeight - scrollTop - clientHeight) <= 5; // Within 5px of bottom
+
+                // For the case where user scrolls up and then AI starts streaming
+                shouldAutoScroll = isUserAtBottom;
+            });
 
             characterList.addEventListener('click', (e) => {
                 const charItem = e.target.closest('.character-item');
@@ -2427,74 +2508,74 @@ userAvatarUpload.addEventListener('change', async (e) => {
 
             // Message Actions
             chatWindow.addEventListener('click', (e) => {
-    const regenBtn = e.target.closest('.regenerate-btn');
-    const deleteBtn = e.target.closest('.delete-btn');
-    const editBtn = e.target.closest('.edit-btn');
-    
-    if (regenBtn) regenerateMessage(parseInt(regenBtn.dataset.index));
-    if (deleteBtn) deleteMessage(parseInt(deleteBtn.dataset.index));
-    if (editBtn) editMessage(parseInt(editBtn.dataset.index));
-});
+                const regenBtn = e.target.closest('.regenerate-btn');
+                const deleteBtn = e.target.closest('.delete-btn');
+                const editBtn = e.target.closest('.edit-btn');
+
+                if (regenBtn) regenerateMessage(parseInt(regenBtn.dataset.index));
+                if (deleteBtn) deleteMessage(parseInt(deleteBtn.dataset.index));
+                if (editBtn) editMessage(parseInt(editBtn.dataset.index));
+            });
 
             // UI & Settings
-        // Add this after your existing sidebarToggle listener:
-sidebarToggle.addEventListener('click', (e) => {
-    e.stopPropagation(); // Prevent event bubbling
-    mainContainer.classList.toggle('sidebar-hidden');
-    
-    // Force reflow for mobile Safari
-    if (/Mobi|Android/i.test(navigator.userAgent)) {
-        const chatArea = $('#chat-area');
-        const sidebar = $('#sidebar');
-        
-        // Temporarily disable pointer events to prevent conflicts
-        sidebar.style.pointerEvents = 'none';
-        setTimeout(() => {
-            sidebar.style.pointerEvents = '';
-        }, 300);
-    }
-});
+            // Add this after your existing sidebarToggle listener:
+            sidebarToggle.addEventListener('click', (e) => {
+                e.stopPropagation(); // Prevent event bubbling
+                mainContainer.classList.toggle('sidebar-hidden');
 
-// Add these lines at the end of your DOMContentLoaded event listener:
-document.addEventListener('touchmove', function(e) {
-    const sidebar = $('#sidebar');
-    const chatArea = $('#chat-area');
-    
-    // If we're touching inside the sidebar, allow its scrolling
-    if (e.target.closest('#sidebar') && !mainContainer.classList.contains('sidebar-hidden')) {
-        return; // Let sidebar scroll normally
-    }
-    
-    // Prevent default scrolling when in certain states
-    const isSidebarOpen = !mainContainer.classList.contains('sidebar-hidden');
-    const touchY = e.touches[0].clientY;
-    const touchX = e.touches[0].clientX;
-    
-    if (isSidebarOpen && touchX < 50) { // Touch near left edge
-        // Allow sidebar to be swiped open
-        return;
-    }
-}, { passive: false });
+                // Force reflow for mobile Safari
+                if (/Mobi|Android/i.test(navigator.userAgent)) {
+                    const chatArea = $('#chat-area');
+                    const sidebar = $('#sidebar');
 
-// Also add this for better mobile scrolling:
-document.body.addEventListener('touchmove', function(e) {
-    const settingsAccordion = $('#settings-accordion');
-    
-    if (e.target.closest('#settings-accordion') && 
-        settingsAccordion.scrollHeight > settingsAccordion.clientHeight) {
-        // Allow settings to scroll independently
-        e.stopPropagation();
-    }
-}, { passive: false });
+                    // Temporarily disable pointer events to prevent conflicts
+                    sidebar.style.pointerEvents = 'none';
+                    setTimeout(() => {
+                        sidebar.style.pointerEvents = '';
+                    }, 300);
+                }
+            });
+
+            // Add these lines at the end of your DOMContentLoaded event listener:
+            document.addEventListener('touchmove', function (e) {
+                const sidebar = $('#sidebar');
+                const chatArea = $('#chat-area');
+
+                // If we're touching inside the sidebar, allow its scrolling
+                if (e.target.closest('#sidebar') && !mainContainer.classList.contains('sidebar-hidden')) {
+                    return; // Let sidebar scroll normally
+                }
+
+                // Prevent default scrolling when in certain states
+                const isSidebarOpen = !mainContainer.classList.contains('sidebar-hidden');
+                const touchY = e.touches[0].clientY;
+                const touchX = e.touches[0].clientX;
+
+                if (isSidebarOpen && touchX < 50) { // Touch near left edge
+                    // Allow sidebar to be swiped open
+                    return;
+                }
+            }, { passive: false });
+
+            // Also add this for better mobile scrolling:
+            document.body.addEventListener('touchmove', function (e) {
+                const settingsAccordion = $('#settings-accordion');
+
+                if (e.target.closest('#settings-accordion') &&
+                    settingsAccordion.scrollHeight > settingsAccordion.clientHeight) {
+                    // Allow settings to scroll independently
+                    e.stopPropagation();
+                }
+            }, { passive: false });
 
 
-// Add this to handle touch events properly on mobile
-document.addEventListener('touchstart', function(e) {
-    if (e.target.closest('#sidebar') && mainContainer.classList.contains('sidebar-hidden')) {
-        // Allow scrolling in sidebar when it's hidden
-        e.stopPropagation();
-    }
-}, { passive: false });
+            // Add this to handle touch events properly on mobile
+            document.addEventListener('touchstart', function (e) {
+                if (e.target.closest('#sidebar') && mainContainer.classList.contains('sidebar-hidden')) {
+                    // Allow scrolling in sidebar when it's hidden
+                    e.stopPropagation();
+                }
+            }, { passive: false });
 
             userPersonaInput.addEventListener('input', () => localStorage.setItem('userPersona', userPersonaInput.value));
             [tempSlider, repPenSlider, minPSlider].forEach(slider => slider.addEventListener('input', saveLLMSettings));
@@ -2504,33 +2585,33 @@ document.addEventListener('touchstart', function(e) {
             // Add the form submission handler:
             editCharForm.addEventListener('submit', handleSaveEditedCharacter);
             cancelEditCharBtn.addEventListener('click', () => editCharModal.classList.add('hidden'));
-// Add to your themeSelector change event listener:
-themeSelector.addEventListener('change', () => {
-    const theme = themeSelector.value;
-    localStorage.setItem('theme', theme);
-    applyTheme(theme);
-    
-    // Add this line to show/hide markdown settings
-    if (theme === 'custom') {
-        customColorsContainer.classList.remove('hidden');
-    } else {
-        customColorsContainer.classList.add('hidden');
-    }
-});
+            // Add to your themeSelector change event listener:
+            themeSelector.addEventListener('change', () => {
+                const theme = themeSelector.value;
+                localStorage.setItem('theme', theme);
+                applyTheme(theme);
 
-// Update color picker event listeners:
-colorPickers.forEach(picker => {
-    picker.addEventListener('input', (e) => {
-        saveAndApplyCustomColor(e.target.dataset.cssVar, e.target.value);
-        
-        // Add this to update markdown colors when changed
-        if (picker.dataset.cssVar.startsWith('--')) {
-            const customTheme = JSON.parse(localStorage.getItem('customTheme')) || {};
-            customTheme[picker.dataset.cssVar] = picker.value;
-            localStorage.setItem('customTheme', JSON.stringify(customTheme));
-        }
-    });
-});
+                // Add this line to show/hide markdown settings
+                if (theme === 'custom') {
+                    customColorsContainer.classList.remove('hidden');
+                } else {
+                    customColorsContainer.classList.add('hidden');
+                }
+            });
+
+            // Update color picker event listeners:
+            colorPickers.forEach(picker => {
+                picker.addEventListener('input', (e) => {
+                    saveAndApplyCustomColor(e.target.dataset.cssVar, e.target.value);
+
+                    // Add this to update markdown colors when changed
+                    if (picker.dataset.cssVar.startsWith('--')) {
+                        const customTheme = JSON.parse(localStorage.getItem('customTheme')) || {};
+                        customTheme[picker.dataset.cssVar] = picker.value;
+                        localStorage.setItem('customTheme', JSON.stringify(customTheme));
+                    }
+                });
+            });
 
 
             // Textarea auto-resize
@@ -2545,138 +2626,28 @@ colorPickers.forEach(picker => {
                 }
             });
         })();
-        function parseMarkdown(text) {
+      
+        function renderMarkdown(text) {
     if (!text || typeof text !== 'string') return '';
     
-    // Escape special HTML characters first
-    text = text
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
+    // First parse with marked
+    const dirtyHtml = marked.parse(text);
     
-    // Convert headers (# H1, ## H2, ### H3)
-    text = text.replace(/^### (.*$)/gm, '<h3 class="text-xl font-bold mt-4 mb-2">$1</h3>');
-    text = text.replace(/^## (.*$)/gm, '<h2 class="text-2xl font-bold mt-6 mb-3">$1</h2>');
-    text = text.replace(/^# (.*$)/gm, '<h1 class="text-3xl font-bold mt-8 mb-4">$1</h1>');
-
-    // Convert bold and italic with proper color classes
-    text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');  // Bold
-    text = text.replace(/\*(.*?)\*/g, '<em class="markdown-italic" style="color: var(--markdown-italic, #a5b4fc)">$1</em>');
-
-    // Block code with triple backticks (```)
-    text = text.replace(/```([\s\S]*?)```/g, function(match, code) {
-        return `<pre class="bg-gray-800 p-3 rounded-lg overflow-x-auto"><code>${code.trim()}</code></pre>`;
+    // Sanitize but allow q tags and other elements
+    let cleanHtml = DOMPurify.sanitize(dirtyHtml, {
+        ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'code', 'pre', 'blockquote', 'ul', 'ol', 'li', 'a', 'h1', 'h2', 'h3', 'q'],
+        ALLOWED_ATTR: ['href', 'class', 'style'],
+        FORBID_ATTR: ['on*'],
+        FORBID_TAGS: ['script', 'iframe', 'form']
     });
-
-    // Inline code with single backticks
-    text = text.replace(/`(.*?)`/g, '<code class="markdown-inline-code" style="background-color: var(--markdown-code-bg, #374151); color: var(--text-main, #f3f4f6)">$1</code>');
-
-    // Convert links [text](url)
-    text = text.replace(/$([^$]+)$$([^)]+)$/g, '<a href="$2" class="markdown-link" style="color: var(--markdown-link, #60a5fa); text-decoration: underline;">$1</a>');
-
-    // Process lists - simplified version that handles incomplete lines better
-    const lines = text.split('\n');
-    let inList = false;
     
-    for (let i = 0; i < lines.length; i++) {
-        if (/^\s*[-*+]\s+(.+)$/.test(lines[i])) {
-            // Handle list items with proper indentation and bullet points
-            if (!inList) {
-                lines[i] = '<ul class="list-disc ml-6 mt-2 mb-2">' + lines[i];
-                inList = true;
-            }
-            lines[i] = lines[i].replace(/^\s*[-*+]\s+(.+)$/, '<li>$1</li>');
-        } else {
-            if (inList && !/^\s*$/.test(lines[i]) && !/^\s*[-*+]\s+(.+)$/.test(lines[i])) {
-                lines.splice(i, 0, '</ul>');
-                i++;
-                inList = false;
-            }
-        }
-    }
-
-    // Close any remaining open list
-    if (inList) {
-        lines.push('</ul>');
-    }
-
-    text = lines.join('\n');
-
-    // Convert quotes with proper styling
-    text = text.replace(/\*(.*?)\*/g, '<em class="markdown-italic" style="color: var(--markdown-italic, #a5b4fc)">$1</em>');
-
-
-    // Line breaks to <br>
-    text = text.replace(/\n/g, '<br>');
-    
-    return text;
-}
-
-// Updated markdown parsing function that properly handles inline styling during streaming
-function parseMarkdownForStreaming(text) {
-    if (!text || typeof text !== 'string') return '';
-    
-    // Escape special HTML characters first
-    text = text
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;');
-    
-    // Convert headers (# H1, ## H2, ### H3)
-    text = text.replace(/^### (.*$)/gm, '<h3 class="text-xl font-bold mt-4 mb-2">$1</h3>');
-    text = text.replace(/^## (.*$)/gm, '<h2 class="text-2xl font-bold mt-6 mb-3">$1</h2>');
-    text = text.replace(/^# (.*$)/gm, '<h1 class="text-3xl font-bold mt-8 mb-4">$1</h1>');
-
-    // Convert bold and italic with proper color classes
-    text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');  // Bold
-    text = text.replace(/\*(.*?)\*/g, '<em class="markdown-italic" style="color: var(--markdown-italic, #a5b4fc)">$1</em>');
-
-    // Block code with triple backticks (```)
-    text = text.replace(/```([\s\S]*?)```/g, function(match, code) {
-        return `<pre class="bg-gray-800 p-3 rounded-lg overflow-x-auto"><code>${code.trim()}</code></pre>`;
+    // Convert text that looks like quoted text to proper q elements
+    // Only match quotes that are standalone or at the start/end of content
+    cleanHtml = cleanHtml.replace(/<p[^>]*>([^<]*?)("([^"]*)")([^<]*?)<\/p>/g, function(match, before, quote, content, after) {
+        return `<p${before}<q style="color: var(--markdown-quote); font-style: italic;">"${content}"</q>${after}</p>`;
     });
-
-    // Inline code with single backticks
-    text = text.replace(/`(.*?)`/g, '<code class="markdown-inline-code" style="background-color: var(--markdown-code-bg, #374151); color: var(--text-main, #f3f4f6)">$1</code>');
-
-    // Convert links [text](url)
-    text = text.replace(/$([^$]+)$$([^)]+)$/g, '<a href="$2" class="markdown-link" style="color: var(--markdown-link, #60a5fa); text-decoration: underline;">$1</a>');
-
-    // Process lists - simplified version that handles incomplete lines better
-    const lines = text.split('\n');
-    let inList = false;
     
-    for (let i = 0; i < lines.length; i++) {
-        if (/^\s*[-*+]\s+(.+)$/.test(lines[i])) {
-            // Handle list items with proper indentation and bullet points
-            if (!inList) {
-                lines[i] = '<ul class="list-disc ml-6 mt-2 mb-2">' + lines[i];
-                inList = true;
-            }
-            lines[i] = lines[i].replace(/^\s*[-*+]\s+(.+)$/, '<li>$1</li>');
-        } else {
-            if (inList && !/^\s*$/.test(lines[i]) && !/^\s*[-*+]\s+(.+)$/.test(lines[i])) {
-                lines.splice(i, 0, '</ul>');
-                i++;
-                inList = false;
-            }
-        }
-    }
-
-    // Close any remaining open list
-    if (inList) {
-        lines.push('</ul>');
-    }
-
-    text = lines.join('\n');
-
-    // Convert quotes with proper styling
-    text = text.replace(/\*(.*?)\*/g, '<em class="markdown-italic" style="color: var(--markdown-italic, #a5b4fc)">$1</em>');
-
-    // Line breaks to <br>
-    text = text.replace(/\n/g, '<br>');
-    
-    return text;
+    return cleanHtml;
 }
 
 
