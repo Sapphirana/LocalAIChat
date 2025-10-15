@@ -23,6 +23,7 @@ This project is specifically designed to work with locally hosted language model
 
 1. A working LLM on your PC: You must have an LLM running locally (e.g., LM Studio, Koboldcpp, TextGenWebUI) on port 1234 (default for LM Studio). You can change this port in `main.py`.
 2. **Python:** Python 3.10 worked on my machine; it should work with higher versions as well.
+3. **Git**: Optional. You can download the file as zip.
 
 ## Installation & Setup
 
