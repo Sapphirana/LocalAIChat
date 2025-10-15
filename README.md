@@ -52,7 +52,7 @@ This project is specifically designed to work with locally hosted language model
 
 > **Note:**  
 > If you want your Flask app to only listen on `localhost`, change the host parameter from `'0.0.0.0'` to `'127.0.0.1'` in `main.py`.  
-> It uses ***ONLY*** Chat Completions-style JSON template (similar to OpenAI's). From my testing, ChatML and Gemma3 work fine.  
+> It uses ***ONLY*** Chat Completions-style JSON template (similar to OpenAI's). From my testing, ChatML and Gemma3 template works fine.  
 > This project was created with the help of an AI assistant and this will be my *first and last* project I ever make. Although I tried to make it as user-friendly as possible, you might encounter some bugs.
 
 ## License Information
