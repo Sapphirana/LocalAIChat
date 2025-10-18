@@ -4,10 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
-    <title>Local AI Chat</title>
+    <title>Local AI Chat v2</title>
     <link href="data/tailwind.min.css" rel="stylesheet">
-    <script src="data/marked.min.js"></script>
-    <script src="data/purify.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.5/dist/purify.min.js"></script>
 
     <style>
         :root {
@@ -43,10 +43,6 @@
             background-color: var(--bg-primary);
             color: var(--text-main);
         }
-
-         * {
-        border-color: var(--bg-secondary) !important;
-            }
 
 
         #theme-selector {
@@ -718,7 +714,7 @@
                             <option value="sepia">Sepia</option>
                             <option value="forest">Forest</option>
                             <option value="ocean">Ocean</option>
-                            <option value="glacier">Glacier</option>
+                            <option value="blush">Blush</option>
                             <option value="earthy">Earthy</option>
                             <option value="lavender">Lavender</option>
 
@@ -985,125 +981,127 @@
             // --- THEME MANAGEMENT ---
             // Add this to the PRESET_THEMES object:
             const PRESET_THEMES = {
-    dark: {
-        '--bg-primary': '#121212',
-        '--bg-secondary': '#1e1e1e',
-        '--bg-accent-color': '#252525',
-        '--accent-color': '#6c5ce7',
-        '--text-main': '#e0e0e0',
-        '--markdown-quote': '#b0bec5',
-        '--markdown-italic': '#a29bfe',
-        '--markdown-code-bg': '#2d2d2d',
-        '--markdown-link': '#55efc4'
-    },
-    pink: {
-    '--bg-primary': '#2b0e1c',            // Deep rosewood
-    '--bg-secondary': '#3c1628',          // Dark berry
-    '--bg-accent-color': '#5a1f3a',       // Plum-pink accent
-    '--accent-color': '#ff5c8d',          // Bright punchy pink
-    '--text-main': '#ffe9ef',             // Soft light pink
-    '--markdown-quote': '#d81b60',        // Vivid raspberry
-    '--markdown-italic': '#f48fb1',       // Ballet pink
-    '--markdown-code-bg': '#451728',      // Wine background
-    '--markdown-link': '#ff80ab'          // Cotton candy
-}
-,
+                dark: {
+                    '--bg-primary': '#111827',
+                    '--bg-secondary': '#1f2937',
+                    '--bg-accent-color': '#1f2937',
+                    '--accent-color': '#4f46e5',
+                    '--text-main': '#f3f4f6',
+                    '--markdown-quote': '#ffffff',
+                    '--markdown-italic': '#a5b4fc',
+                    '--markdown-code-bg': '#374151',
+                    '--markdown-link': '#60a5fa'
+                },
+                pink: {
+                    '--bg-primary': '#fdf2f8',
+                    '--bg-secondary': '#fce7f3',
+                    '--bg-accent-color': '#fce7f3',
+                    '--accent-color': '#db2777',
+                    '--text-main': '#500724',
+                    '--markdown-quote': '#be185d',
+                    '--markdown-italic': '#ec4899',
+                    '--markdown-code-bg': '#fbcfe8',
+                    '--markdown-link': '#d946ef'
+                },
 
- 
- cappuccino: {
-    '--bg-primary': '#141420',          // Darker base (almost black-purple)
-  '--bg-secondary': '#0f0f14',        // Even darker mantle
-  '--bg-accent-color': '#2a2a3b',     // Deeper surface shade
-  '--accent-color': '#d87e54',        // Warm peach, slightly more saturated for pop
-  '--text-main': '#bfc7d8',           // Softer light text, less bright than original
-  '--markdown-quote': '#e8bdb6',      // Muted flamingo pink
-  '--markdown-italic': '#e9a778',     // Softer peachy tone
-  '--markdown-code-bg': '#2a2a3b',    // Same as bg-accent-color for consistency
-  '--markdown-link': '#7da7f9'   
-}
+                cappuccino: {
+                    '--bg-primary': '#f0e9e4',
+                    '--bg-secondary': '#e4d9cf',
+                    '--bg-accent-color': '#e4d9cf',
+                    '--accent-color': '#8c5a3b',
+                    '--text-main': '#4b372b',
+                    '--markdown-quote': '#5c3a28',
+                    '--markdown-italic': '#a47149',
+                    '--markdown-code-bg': '#d6c4b2',
+                    '--markdown-link': '#a65f3c'
+                },
 
+                sepia: {
+                    '--bg-primary': '#f1e6d0',
+                    '--bg-secondary': '#e4d5b7',
+                    '--bg-accent-color': '#e4d5b7',
+                    '--accent-color': '#70542d',
+                    '--text-main': '#43341b',
+                    '--markdown-quote': '#5a4320',
+                    '--markdown-italic': '#8b6b3d',
+                    '--markdown-code-bg': '#d9c9a3',
+                    '--markdown-link': '#a1763f'
+                },
 
-,
-    sepia: {
-        '--bg-primary': '#f8f3e6',
-        '--bg-secondary': '#f0e7d5',
-        '--bg-accent-color': '#e8dbc4',
-        '--accent-color': '#795548',
-        '--text-main': '#3e2723',
-        '--markdown-quote': '#6d4c41',
-        '--markdown-italic': '#8d6e63',
-        '--markdown-code-bg': '#efebe9',
-        '--markdown-link': '#a1887f'
-    },
-    forest: {
-        '--bg-primary': '#0d2b1f',
-        '--bg-secondary': '#1b4a32',
-        '--bg-accent-color': '#2a5f42',
-        '--accent-color': '#66bb6a',
-        '--text-main': '#e8f5e9',
-        '--markdown-quote': '#c8e6c9',
-        '--markdown-italic': '#a5d6a7',
-        '--markdown-code-bg': '#1b3b2a',
-        '--markdown-link': '#81c784'
-    },
-    ocean: {
-        '--bg-primary': '#012a4a',
-        '--bg-secondary': '#01497c',
-        '--bg-accent-color': '#014f86',
-        '--accent-color': '#4895ef',
-        '--text-main': '#f1f9ff',
-        '--markdown-quote': '#a9d6e5',
-        '--markdown-italic': '#89c2d9',
-        '--markdown-code-bg': '#023047',
-        '--markdown-link': '#64b5f6'
-    },
-    glacier: {
-        '--bg-primary': '#12232e',              // Dark slate blue
-    '--bg-secondary': '#1b3a4b',            // Deep ocean blue
-    '--bg-accent-color': '#27576e',         // Muted steel blue
-    '--accent-color': '#4aa3df',            // Bright glacier blue
-    '--text-main': '#cbe7f0',               // Soft icy blue
-    '--markdown-quote': '#3fa7b0',          // Teal-ish cyan
-    '--markdown-italic': '#70c1d6',         // Pale cyan
-    '--markdown-code-bg': '#1e4054',        // Dark steel blue background
-    '--markdown-link': '#5bc0de'            // Bright blue link
-    },
-    earthy: {
-      
-'--bg-primary': '#2e1a0f',              // Rich brown
-    '--bg-secondary': '#3b2415',            // Slightly warmer
-    '--bg-accent-color': '#5e3921',         // Warm chestnut
-    '--accent-color': '#f4a261',            // Pumpkin orange
-    '--text-main': '#fff3e0',               // Cream
-    '--markdown-quote': '#e76f51',          // Burnt coral
-    '--markdown-italic': '#f6bd60',         // Golden wheat
-    '--markdown-code-bg': '#4e342e',        // Deep bark
-    '--markdown-link': '#ffa07a'            // Soft salmon
+                forest: {
+                    '--bg-primary': '#1b3a2b',
+                    '--bg-secondary': '#3e6f47',
+                    '--bg-accent-color': '#3e6f47',
+                    '--accent-color': '#6c9e55',
+                    '--text-main': '#e4f4e1',
+                    '--markdown-quote': '#d2f5c8',
+                    '--markdown-italic': '#a8ddb5',
+                    '--markdown-code-bg': '#2a4d3a',
+                    '--markdown-link': '#8ef0a7'
+                },
 
-},
-lavender: {
-    '--bg-primary': '#1c152b',           // Midnight lavender
-    '--bg-secondary': '#2a1f3d',         // Plum shadow
-    '--bg-accent-color': '#4b3a66',      // Dusty purple
-    '--accent-color': '#a58fd5',         // Light lavender accent
-    '--text-main': '#f2eaff',            // Pale lavender-white
-    '--markdown-quote': '#7c5fb3',       // Regal purple
-    '--markdown-italic': '#bba3e0',      // Muted violet
-    '--markdown-code-bg': '#332544',     // Deep lilac
-    '--markdown-link': '#d1b3ff'         // Lavender-pink
-},
-    light: {
-        '--bg-primary': '#ffffff',
-        '--bg-secondary': '#f8f9fa',
-        '--bg-accent-color': '#e9ecef',
-        '--accent-color': '#e9ecef',
-        '--text-main': '#212529',
-        '--markdown-quote': '#6c757d',
-        '--markdown-italic': '#0d6efd',
-        '--markdown-code-bg': '#f8f9fa',
-        '--markdown-link': '#0a58ca'
-    }
-};
+                ocean: {
+                    '--bg-primary': '#023e8a',
+                    '--bg-secondary': '#0077b6',
+                    '--bg-accent-color': '#0096c7',
+                    '--accent-color': '#00b4d8',
+                    '--text-main': '#ffffff',
+                    '--markdown-quote': '#caf0f8',
+                    '--markdown-italic': '#ade8f4',
+                    '--markdown-code-bg': '#014f86',
+                    '--markdown-link': '#90e0ef'
+                },
+
+                blush: {
+                    '--bg-primary': '#FCE2E2',
+                    '--bg-secondary': '#F9B5B5',
+                    '--bg-accent-color': '#F9B5B5',
+                    '--accent-color': '#F87070',
+                    '--text-main': '#3E3B3A',
+                    '--markdown-quote': '#cc6666',
+                    '--markdown-italic': '#f48c8c',
+                    '--markdown-code-bg': '#fddddd',
+                    '--markdown-link': '#f87171'
+                },
+
+                earthy: {
+                    '--bg-primary': '#D3C9A1',
+                    '--bg-secondary': '#C1B48B',
+                    '--bg-accent-color': '#C1B48B',
+                    '--accent-color': '#8E7D3B',
+                    '--text-main': '#3E3E32',
+                    '--markdown-quote': '#5e5632',
+                    '--markdown-italic': '#a49462',
+                    '--markdown-code-bg': '#e2d7af',
+                    '--markdown-link': '#947f3c'
+                },
+
+                lavender: {
+                    '--bg-primary': '#e6e6fa',
+                    '--bg-secondary': '#dcd6f7',
+                    '--bg-accent-color': '#dcd6f7',
+                    '--accent-color': '#7f5fc6',
+                    '--text-main': '#4e4b87',
+                    '--markdown-quote': '#5e4aa5',
+                    '--markdown-italic': '#a599d4',
+                    '--markdown-code-bg': '#d2ccf1',
+                    '--markdown-link': '#8b72d1'
+                },
+
+                light: {
+                    '--bg-primary': '#ffffff',
+                    '--bg-secondary': '#f4f4f9',
+                    '--bg-accent-color': '#e0e0e0',
+                    '--accent-color': '#007acc',
+                    '--text-main': '#333333',
+                    '--markdown-quote': '#000000',
+                    '--markdown-italic': '#007acc',
+                    '--markdown-code-bg': '#f0f0f0',
+                    '--markdown-link': '#0066cc'
+                }
+
+            };
+
 
             function createFullscreenButton() {
                 // Create fullscreen toggle button
@@ -2642,13 +2640,12 @@ lavender: {
     });
     
     // Convert text that looks like quoted text to proper q elements
-    // Only match quotes that are standalone or at the start/end of content
-    cleanHtml = cleanHtml.replace(/<p[^>]*>([^<]*?)("([^"]*)")([^<]*?)<\/p>/g, function(match, before, quote, content, after) {
-        return `<p${before}<q style="color: var(--markdown-quote); font-style: italic;">"${content}"</q>${after}</p>`;
-    });
+    // This handles the case where double quotes should be styled as quotes
+    cleanHtml = cleanHtml.replace(/"([^"]*)"/g, '<q style="color: var(--markdown-quote); font-style: italic;">"$1"</q>');
     
     return cleanHtml;
 }
+
 
 
     </script>
